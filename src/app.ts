@@ -1,4 +1,5 @@
 import express from 'express'
+import routes from './routes'
 
 class App {
   public express = express.application
@@ -14,9 +15,7 @@ class App {
   }
 
   private routes (): void {
-    this.express.get('/', (req, res) => {
-      res.json({ msg: 'Hello!!!' })
-    })
+    this.express.use(routes)
   }
 }
 

@@ -4,13 +4,16 @@
   "description": "App to collect data from anywhere",
   "main": "index.js",
   "author": "R.C. Informatica",
-  "license": "Proprietary",
+  "license": "proprietary",
   "private": true,
   "scripts": {
     "dev": "ts-node-dev --ignore-watch node_modules src/server.ts"
   },
   "dependencies": {
-    "express": "^4.17.1"
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "pg": "^8.3.0",
+    "pg-hstore": "^2.3.3"
   },
   "devDependencies": {
     "@types/express": "^4.17.7",
