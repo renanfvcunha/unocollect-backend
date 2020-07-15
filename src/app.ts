@@ -1,4 +1,6 @@
+import 'reflect-metadata'
 import express from 'express'
+import { createConnection } from 'typeorm'
 import routes from './routes'
 
 class App {
@@ -8,6 +10,7 @@ class App {
     this.express = express()
     this.middlewares()
     this.routes()
+    this.database()
   }
 
   private middlewares (): void {
@@ -16,6 +19,10 @@ class App {
 
   private routes (): void {
     this.express.use(routes)
+  }
+
+  private async database (): Promise<void> {
+    await createConnection()
   }
 }
 
