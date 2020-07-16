@@ -7,8 +7,12 @@ interface Decoded {
   id?: number
 }
 
+interface UserRequest extends Request {
+  userId: number
+}
+
 export default async (
-  req: Request,
+  req: UserRequest,
   res: Response,
   next: NextFunction
 ): Promise<Response | void> => {
@@ -24,7 +28,11 @@ export default async (
 
   // Verificando se token enviado não foi alterado
   try {
-    await promisify(jwt.verify)(token, authConfig.secret)
+    const decoded: Decoded = await promisify(jwt.verify)(
+      token,
+      authConfig.secret
+    )
+    req.userId = decoded.id
     return next()
   } catch (err) {
     return res.status(401).json({ msg: 'Token inválido!' })

@@ -34,6 +34,7 @@ class SessionController {
 
     const { id, registration, name, admin } = user
 
+    // Retornando informações do usuário com o token de autenticação
     return res.json({
       user: { id, registration, name, username, admin },
       token: jwt.sign({ id }, authConfig.secret, {
