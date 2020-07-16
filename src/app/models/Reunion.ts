@@ -5,9 +5,11 @@ import {
   Column,
   ManyToOne,
   CreateDateColumn,
-  UpdateDateColumn
+  UpdateDateColumn,
+  OneToMany
 } from 'typeorm'
 import { Category } from './Category'
+import { Field } from './Field'
 
 @Entity({
   name: 'reunions'
@@ -39,4 +41,10 @@ export class Reunion {
 
   @UpdateDateColumn()
   updated_at: Date
+
+  @OneToMany(
+    type => Field,
+    field => field.reunion
+  )
+  fields: Field[]
 }

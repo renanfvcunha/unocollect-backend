@@ -7,26 +7,26 @@ import {
   CreateDateColumn,
   UpdateDateColumn
 } from 'typeorm'
-import { UserReunion } from './UserReunion'
+import { User } from './User'
 import { Field } from './Field'
 
 @Entity({
-  name: 'fields_users_reunions'
+  name: 'fields_values'
 })
-export class FieldUserReunion {
+export class FieldValue {
   @PrimaryGeneratedColumn()
   id: number
 
   @ManyToOne(
-    type => UserReunion,
-    user_reunion => user_reunion.id,
+    type => User,
+    user => user.id,
     {
       onUpdate: 'CASCADE',
       onDelete: 'CASCADE',
       nullable: false
     }
   )
-  user_reunion: UserReunion
+  user: User
 
   @ManyToOne(
     type => Field,
@@ -42,7 +42,9 @@ export class FieldUserReunion {
   @Column('text')
   value: string
 
-  @Column()
+  @Column({
+    default: 0
+  })
   updates: number
 
   @CreateDateColumn()
