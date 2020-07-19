@@ -5,21 +5,24 @@ import {
   ManyToOne,
   Column,
   CreateDateColumn,
-  UpdateDateColumn
+  UpdateDateColumn,
+  OneToMany
 } from 'typeorm'
 import { User } from './User'
-import { Reunion } from './Reunion'
+import { Form } from './Form'
+import { ImageUserForm } from './ImageUserForm'
+import { FieldUserValue } from './FieldUserValue'
 
 @Entity({
-  name: 'users_reunions'
+  name: 'users_forms'
 })
-export class UserReunion {
+export class UserForm {
   @PrimaryGeneratedColumn()
   id: number
 
   @ManyToOne(
     type => User,
-    user => user.id,
+    user => user.userForm,
     {
       onUpdate: 'CASCADE',
       onDelete: 'NO ACTION',
@@ -29,15 +32,15 @@ export class UserReunion {
   user: User
 
   @ManyToOne(
-    type => Reunion,
-    reunion => reunion.id,
+    type => Form,
+    form => form.userForm,
     {
       onUpdate: 'CASCADE',
       onDelete: 'NO ACTION',
       nullable: false
     }
   )
-  reunion: Reunion
+  form: Form
 
   @Column('decimal')
   latitude: number
@@ -45,12 +48,21 @@ export class UserReunion {
   @Column('decimal')
   longitude: number
 
-  @Column('smallint')
-  status: number
-
   @CreateDateColumn()
   created_at: number
 
   @UpdateDateColumn()
   updated_at: number
+
+  @OneToMany(
+    type => ImageUserForm,
+    imageUserForm => imageUserForm.userForm
+  )
+  imageUserForm: ImageUserForm[]
+
+  @OneToMany(
+    type => FieldUserValue,
+    fieldUserValue => fieldUserValue.userForm
+  )
+  fieldUserValue: FieldUserValue[]
 }

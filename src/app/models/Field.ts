@@ -5,9 +5,11 @@ import {
   ManyToOne,
   Column,
   CreateDateColumn,
-  UpdateDateColumn
+  UpdateDateColumn,
+  OneToMany
 } from 'typeorm'
-import { Reunion } from './Reunion'
+import { Form } from './Form'
+import { FieldUserValue } from './FieldUserValue'
 
 @Entity({
   name: 'fields'
@@ -17,15 +19,15 @@ export class Field {
   id: number
 
   @ManyToOne(
-    type => Reunion,
-    reunion => reunion.fields,
+    type => Form,
+    form => form.fields,
     {
       onUpdate: 'CASCADE',
       onDelete: 'CASCADE',
       nullable: false
     }
   )
-  reunion: Reunion
+  form: Form
 
   @Column({
     length: 100
@@ -43,4 +45,10 @@ export class Field {
 
   @UpdateDateColumn()
   updated_at: Date
+
+  @OneToMany(
+    type => FieldUserValue,
+    fieldUserValue => fieldUserValue.field
+  )
+  fieldUserValue: FieldUserValue[]
 }

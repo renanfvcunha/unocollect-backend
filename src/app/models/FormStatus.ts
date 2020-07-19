@@ -7,30 +7,42 @@ import {
   CreateDateColumn,
   UpdateDateColumn
 } from 'typeorm'
-import { UserReunion } from './UserReunion'
+import { Form } from './Form'
+import { User } from './User'
 
 @Entity({
-  name: 'images_users_reunions'
+  name: 'forms_status'
 })
-export class ImageUserReunion {
+export class FormStatus {
   @PrimaryGeneratedColumn()
   id: number
 
   @ManyToOne(
-    type => UserReunion,
-    user_reunion => user_reunion.id,
+    type => Form,
+    form => form.status,
     {
       onUpdate: 'CASCADE',
       onDelete: 'CASCADE',
       nullable: false
     }
   )
-  user_reunion: UserReunion
+  form: Form
 
-  @Column({
-    length: 25
+  @ManyToOne(
+    type => User,
+    user => user.status,
+    {
+      onUpdate: 'CASCADE',
+      onDelete: 'CASCADE',
+      nullable: false
+    }
+  )
+  user: User
+
+  @Column('smallint', {
+    default: 0
   })
-  name: string
+  status: number
 
   @CreateDateColumn()
   created_at: Date

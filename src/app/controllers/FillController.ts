@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import { getRepository } from 'typeorm'
-import { FieldValue } from '../models/FieldValue'
+import { FieldUserValue } from '../models/FieldUserValue'
 
 interface UserRequest extends Request {
   userId: number
@@ -18,14 +18,14 @@ class FillController {
     }))
 
     try {
-      const valuesSaved = await getRepository(FieldValue)
+      const valuesSaved = await getRepository(FieldUserValue)
         .createQueryBuilder()
         .insert()
-        .into(FieldValue)
+        .into(FieldUserValue)
         .values(valuesWithId)
         .execute()
 
-      return res.json(valuesSaved)
+      return res.json(valuesSaved.generatedMaps)
     } catch (err) {
       return res.status(500).json(err)
     }

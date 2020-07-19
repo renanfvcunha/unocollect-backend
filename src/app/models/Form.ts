@@ -10,17 +10,19 @@ import {
 } from 'typeorm'
 import { Category } from './Category'
 import { Field } from './Field'
+import { FormStatus } from './FormStatus'
+import { UserForm } from './UserForm'
 
 @Entity({
-  name: 'reunions'
+  name: 'forms'
 })
-export class Reunion {
+export class Form {
   @PrimaryGeneratedColumn()
   id: number
 
   @ManyToOne(
     type => Category,
-    category => category.id,
+    category => category.form,
     {
       onUpdate: 'CASCADE',
       onDelete: 'SET NULL'
@@ -44,7 +46,19 @@ export class Reunion {
 
   @OneToMany(
     type => Field,
-    field => field.reunion
+    field => field.form
   )
   fields: Field[]
+
+  @OneToMany(
+    type => FormStatus,
+    status => status.form
+  )
+  status: FormStatus[]
+
+  @OneToMany(
+    type => UserForm,
+    userForm => userForm.form
+  )
+  userForm: UserForm[]
 }

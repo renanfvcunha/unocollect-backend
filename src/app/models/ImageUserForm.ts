@@ -7,45 +7,30 @@ import {
   CreateDateColumn,
   UpdateDateColumn
 } from 'typeorm'
-import { User } from './User'
-import { Field } from './Field'
+import { UserForm } from './UserForm'
 
 @Entity({
-  name: 'fields_values'
+  name: 'images_users_forms'
 })
-export class FieldValue {
+export class ImageUserForm {
   @PrimaryGeneratedColumn()
   id: number
 
   @ManyToOne(
-    type => User,
-    user => user.id,
+    type => UserForm,
+    userForm => userForm.imageUserForm,
     {
       onUpdate: 'CASCADE',
       onDelete: 'CASCADE',
       nullable: false
     }
   )
-  user: User
-
-  @ManyToOne(
-    type => Field,
-    field => field.id,
-    {
-      onUpdate: 'CASCADE',
-      onDelete: 'CASCADE',
-      nullable: false
-    }
-  )
-  field: Field
-
-  @Column('text')
-  value: string
+  userForm: UserForm
 
   @Column({
-    default: 0
+    length: 25
   })
-  updates: number
+  name: string
 
   @CreateDateColumn()
   created_at: Date

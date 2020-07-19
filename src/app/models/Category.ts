@@ -1,4 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm'
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm'
+import { Form } from './Form'
 
 @Entity({
   name: 'categories'
@@ -11,4 +13,10 @@ export class Category {
     length: 50
   })
   name: string
+
+  @OneToMany(
+    type => Form,
+    form => form.category
+  )
+  form: Form[]
 }

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import { getRepository, getManager, createQueryBuilder } from 'typeorm'
-import { Reunion } from '../models/Reunion'
+import { Form } from '../models/Form'
 import { Field } from '../models/Field'
 
 interface FieldInterface {
@@ -9,23 +9,23 @@ interface FieldInterface {
   description: string
 }
 
-class ReunionController {
+class FormController {
   public async index (req: Request, res: Response): Promise<Response> {
-    const reunions = await getRepository(Reunion).find()
+    const forms = await getRepository(Form).find()
 
-    return res.json(reunions)
+    return res.json(forms)
   }
 
   public async store (req: Request, res: Response): Promise<Response> {
     const { fields } = req.body
 
     try {
-      const reunion = await getManager().transaction(
+      const form = await getManager().transaction(
         async transactionalEntityManager => {
           const result = await transactionalEntityManager
             .createQueryBuilder()
             .insert()
-            .into(Reunion)
+            .into(Form)
             .values([
               {
                 category: null,
@@ -53,8 +53,10 @@ class ReunionController {
             .values(fieldsWithId)
             .execute()
         }
+
+        // await
       )
-      return res.json(reunion)
+      return res.json(form)
     } catch (err) {
       return res.status(500).json(err)
     }
@@ -63,13 +65,13 @@ class ReunionController {
   public async show (req: Request, res: Response): Promise<Response> {
     const { id } = req.params
 
-    const reunion = await createQueryBuilder(Reunion)
-      .innerJoinAndSelect('Reunion.fields', 'field')
-      .where('Reunion.id = :id', { id })
+    const form = await createQueryBuilder(Form)
+      .innerJoinAndSelect('Form.fields', 'field')
+      .where('Form.id = :id', { id })
       .getOne()
 
-    return res.json(reunion)
+    return res.json(form)
   }
 }
 
-export default new ReunionController()
+export default new FormController()

@@ -1,10 +1,14 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
-  UpdateDateColumn
+  UpdateDateColumn,
+  OneToMany
 } from 'typeorm'
+import { FormStatus } from './FormStatus'
+import { UserForm } from './UserForm'
 
 @Entity({
   name: 'users'
@@ -41,4 +45,16 @@ export class User {
 
   @UpdateDateColumn()
   updated_at: Date
+
+  @OneToMany(
+    type => FormStatus,
+    status => status.user
+  )
+  status: FormStatus[]
+
+  @OneToMany(
+    type => UserForm,
+    userForm => userForm.form
+  )
+  userForm: UserForm[]
 }

@@ -3,7 +3,7 @@ import UserController from './app/controllers/UserController'
 import SessionController from './app/controllers/SessionController'
 import authMiddleware from './app/middlewares/auth'
 import isAdminMiddleware from './app/middlewares/isAdmin'
-import ReunionController from './app/controllers/ReunionController'
+import FormController from './app/controllers/FormController'
 import CategoryController from './app/controllers/CategoryController'
 import FillController from './app/controllers/FillController'
 
@@ -14,9 +14,10 @@ routes.post('/session', SessionController.store)
 // Middleware de autenticação. Todas as rotas abaixo irão exigir autenticação do usuário
 routes.use(authMiddleware)
 
-routes.get('/reunions', ReunionController.index)
-routes.get('/reunions/:id', ReunionController.show)
+routes.get('/forms', FormController.index)
+routes.get('/forms/:id', FormController.show)
 
+// Rota de inserção de dados do formulario
 routes.post('/fills', FillController.store)
 
 // Middleware de verificação de admin. Todas as rotas abaixo só serão acessíveis por administradores.
@@ -31,6 +32,6 @@ routes.delete('/users/:id', UserController.destroy)
 routes.get('/categories', CategoryController.index)
 routes.post('/categories', CategoryController.store)
 
-routes.post('/reunions', ReunionController.store)
+routes.post('/forms', FormController.store)
 
 export default routes
