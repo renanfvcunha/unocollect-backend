@@ -5,7 +5,8 @@ import {
   ManyToOne,
   Column,
   CreateDateColumn,
-  UpdateDateColumn
+  UpdateDateColumn,
+  JoinColumn
 } from 'typeorm'
 import { UserForm } from './UserForm'
 
@@ -21,11 +22,14 @@ export class ImageUserForm {
     userForm => userForm.imageUserForm,
     {
       onUpdate: 'CASCADE',
-      onDelete: 'CASCADE',
+      onDelete: 'NO ACTION',
       nullable: false
     }
   )
-  userForm: UserForm
+  @JoinColumn({
+    name: 'user_form_id'
+  })
+  userForm: number
 
   @Column({
     length: 25

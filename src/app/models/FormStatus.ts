@@ -5,7 +5,8 @@ import {
   ManyToOne,
   Column,
   CreateDateColumn,
-  UpdateDateColumn
+  UpdateDateColumn,
+  JoinColumn
 } from 'typeorm'
 import { Form } from './Form'
 import { User } from './User'
@@ -26,7 +27,10 @@ export class FormStatus {
       nullable: false
     }
   )
-  form: Form
+  @JoinColumn({
+    name: 'form_id'
+  })
+  form: number
 
   @ManyToOne(
     type => User,
@@ -37,7 +41,10 @@ export class FormStatus {
       nullable: false
     }
   )
-  user: User
+  @JoinColumn({
+    name: 'user_id'
+  })
+  user: number
 
   @Column('smallint', {
     default: 0

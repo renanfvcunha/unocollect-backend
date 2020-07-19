@@ -2,9 +2,11 @@ import { Request, Response } from 'express'
 import { getRepository, getManager, createQueryBuilder } from 'typeorm'
 import { Form } from '../models/Form'
 import { Field } from '../models/Field'
+import { User } from '../models/User'
+import { FormStatus } from '../models/FormStatus'
 
 interface FieldInterface {
-  reunion: number
+  form: number
   name: string
   description: string
 }
@@ -22,6 +24,7 @@ class FormController {
     try {
       const form = await getManager().transaction(
         async transactionalEntityManager => {
+          // Criando o nome e descrição do formulário
           const result = await transactionalEntityManager
             .createQueryBuilder()
             .insert()
@@ -35,12 +38,13 @@ class FormController {
             ])
             .execute()
 
-          const id = result.identifiers[0].id
+          // Criando os campos do formulário
+          const formId: number = result.identifiers[0].id
 
           const fieldsWithId = fields.map(
             field =>
               <FieldInterface>{
-                reunion: id,
+                form: formId,
                 name: field.name,
                 description: field.description
               }
@@ -52,9 +56,24 @@ class FormController {
             .into(Field)
             .values(fieldsWithId)
             .execute()
-        }
 
-        // await
+          // Criando os status do formulario para cada usuário
+          const users = await transactionalEntityManager
+            .getRepository(User)
+            .find({ select: ['id'] })
+
+          const usersId = users.map(user => ({
+            form: formId,
+            user: user.id
+          }))
+
+          await transactionalEntityManager
+            .createQueryBuilder()
+            .insert()
+            .into(FormStatus)
+            .values(usersId)
+            .execute()
+        }
       )
       return res.json(form)
     } catch (err) {

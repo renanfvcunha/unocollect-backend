@@ -6,7 +6,8 @@ import {
   ManyToOne,
   CreateDateColumn,
   UpdateDateColumn,
-  OneToMany
+  OneToMany,
+  JoinColumn
 } from 'typeorm'
 import { Category } from './Category'
 import { Field } from './Field'
@@ -28,7 +29,10 @@ export class Form {
       onDelete: 'SET NULL'
     }
   )
-  category: Category
+  @JoinColumn({
+    name: 'category_id'
+  })
+  category: number
 
   @Column({
     length: 100

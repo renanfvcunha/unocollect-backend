@@ -5,7 +5,8 @@ import {
   ManyToOne,
   Column,
   CreateDateColumn,
-  UpdateDateColumn
+  UpdateDateColumn,
+  JoinColumn
 } from 'typeorm'
 import { UserForm } from './UserForm'
 import { Field } from './Field'
@@ -26,7 +27,10 @@ export class FieldUserValue {
       nullable: false
     }
   )
-  field: Field
+  @JoinColumn({
+    name: 'field_id'
+  })
+  field: number
 
   @ManyToOne(
     type => UserForm,
@@ -37,7 +41,10 @@ export class FieldUserValue {
       nullable: false
     }
   )
-  userForm: UserForm
+  @JoinColumn({
+    name: 'user_form_id'
+  })
+  userForm: number
 
   @Column('text')
   value: string

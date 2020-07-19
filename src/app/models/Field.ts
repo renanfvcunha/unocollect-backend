@@ -6,7 +6,8 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
-  OneToMany
+  OneToMany,
+  JoinColumn
 } from 'typeorm'
 import { Form } from './Form'
 import { FieldUserValue } from './FieldUserValue'
@@ -27,6 +28,9 @@ export class Field {
       nullable: false
     }
   )
+  @JoinColumn({
+    name: 'form_id'
+  })
   form: Form
 
   @Column({

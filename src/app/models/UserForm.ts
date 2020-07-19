@@ -6,7 +6,8 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
-  OneToMany
+  OneToMany,
+  JoinColumn
 } from 'typeorm'
 import { User } from './User'
 import { Form } from './Form'
@@ -29,7 +30,10 @@ export class UserForm {
       nullable: false
     }
   )
-  user: User
+  @JoinColumn({
+    name: 'user_id'
+  })
+  user: number
 
   @ManyToOne(
     type => Form,
@@ -40,7 +44,10 @@ export class UserForm {
       nullable: false
     }
   )
-  form: Form
+  @JoinColumn({
+    name: 'form_id'
+  })
+  form: number
 
   @Column('decimal')
   latitude: number
