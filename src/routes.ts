@@ -18,7 +18,7 @@ routes.get('/forms', FormController.index)
 routes.get('/forms/:id', FormController.show)
 
 // Rota de inserção de dados do formulario
-routes.post('/fills', FillController.store)
+routes.post('/fills/:id', FillController.store)
 
 // Middleware de verificação de admin. Todas as rotas abaixo só serão acessíveis por administradores.
 routes.use(isAdminMiddleware)

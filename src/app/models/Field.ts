@@ -31,7 +31,7 @@ export class Field {
   @JoinColumn({
     name: 'form_id'
   })
-  form: Form
+  form: number
 
   @Column({
     length: 100
