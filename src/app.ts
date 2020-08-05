@@ -1,6 +1,7 @@
 import 'reflect-metadata'
 import express from 'express'
 import { createConnection } from 'typeorm'
+import cors from 'cors'
 import routes from './routes'
 
 class App {
@@ -14,6 +15,7 @@ class App {
   }
 
   private middlewares (): void {
+    this.express.use(cors())
     this.express.use(express.json())
   }
 

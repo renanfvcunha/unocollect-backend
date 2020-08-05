@@ -24,7 +24,7 @@ class UserController {
         registration: user.registration,
         name: user.name,
         username: user.username,
-        admin: user.admin
+        admin: user.admin ? 'Sim' : 'Não'
       }))
     )
   }
