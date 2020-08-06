@@ -5,4 +5,5 @@ build/
 tmp/
 temp/
 .env
+package-lock.json
 yarn.lock

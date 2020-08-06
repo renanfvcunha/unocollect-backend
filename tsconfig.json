@@ -8,6 +8,7 @@
       "module": "commonjs",
       "moduleResolution": "node",
       "outDir": "./build",
+      "removeComments": true,
       "emitDecoratorMetadata": true,
       "experimentalDecorators": true,
       "sourceMap": true,
