@@ -56,11 +56,6 @@ class UserController {
       total = totalCount
     }
 
-    // Verificando se não houve retorno
-    if (usersQuery.length === 0) {
-      return res.json({ msg: 'Não foram encontrados registros.' })
-    }
-
     const users = usersQuery.map(user => ({
       ...user,
       admin: user.admin ? 'Sim' : 'Não'

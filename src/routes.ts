@@ -17,9 +17,6 @@ routes.post('/session', SessionController.store)
 // Middleware de autenticação. Todas as rotas abaixo irão exigir autenticação do usuário
 routes.use(authMiddleware)
 
-routes.get('/forms', FormController.index)
-routes.get('/forms/:id', FormController.show)
-
 // Rota de inserção de dados do formulario
 routes.post('/fills/:id', FillController.store)
 
@@ -35,6 +32,8 @@ routes.delete('/users/:id', UserController.destroy)
 routes.get('/categories', CategoryController.index)
 routes.post('/categories', CategoryController.store)
 
+routes.get('/forms', FormController.index)
+routes.get('/forms/:id', FormController.show)
 routes.post('/forms', FormController.store)
 
 export default routes
