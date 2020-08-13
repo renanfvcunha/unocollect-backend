@@ -1,5 +1,6 @@
 import { Request, Response } from 'express'
-import { getRepository, getManager, createQueryBuilder } from 'typeorm'
+import { getRepository, getManager } from 'typeorm'
+
 import { Form } from '../models/Form'
 import { Field } from '../models/Field'
 import { User } from '../models/User'
@@ -8,6 +9,7 @@ import { FormStatus } from '../models/FormStatus'
 interface FormInterface {
   title: string
   description?: string
+  created_at?: Date
   category?: number
 }
 
@@ -47,7 +49,7 @@ class FormController {
           .select([
             'form.id as id',
             'form.title as title',
-            'form.created_at as created_at',
+            `form.created_at at time zone 'utc' as created_at`,
             'category.name as category',
             'COUNT(userForm.id) as fills'
           ])
@@ -72,7 +74,7 @@ class FormController {
           .select([
             'form.id as id',
             'form.title as title',
-            'form.created_at as created_at',
+            `form.created_at at time zone 'utc' as created_at`,
             'category.name as category',
             'COUNT(userForm.id) as fills'
           ])
@@ -89,7 +91,7 @@ class FormController {
         total = totalCount
       }
 
-      const forms = formsQuery.map(form => ({
+      const forms = formsQuery.map((form: FormInterface) => ({
         ...form,
         category: form.category !== null ? form.category : 'Sem Categoria'
       }))
@@ -175,12 +177,103 @@ class FormController {
   public async show (req: Request, res: Response): Promise<Response> {
     const { id } = req.params
 
-    const form = await createQueryBuilder(Form)
-      .innerJoinAndSelect('Form.fields', 'field')
-      .where('Form.id = :id', { id })
-      .getOne()
+    try {
+      // Buscando formulários com campos e valores
+      const formQuery = await getRepository(Form)
+        .createQueryBuilder('form')
+        .select([
+          'form.id',
+          'form.title',
+          'form.description',
+          `form.created_at at time zone 'utc' as form_created_at`,
+          'field.id',
+          'field.name',
+          'field.description',
+          `field.created_at at time zone 'utc' as field_created_at`
+          /* 'fieldUserValue.value',
+          'fieldUserValue.field_id as user_field_id',
+          `fieldUserValue.created_at at time zone 'utc' as value_created_at`,
+          'userForm.id',
+          'user.name' */
+        ])
+        .leftJoin('form.fields', 'field')
+        /* .leftJoin('field.fieldsUserValue', 'fieldUserValue')
+        .leftJoin('fieldUserValue.userForm', 'userForm')
+        .leftJoin('userForm.user', 'user') */
+        .where('form.id = :id', { id })
+        .getRawMany()
 
-    return res.json(form)
+      // Verificando se houve retorno
+      if (formQuery.length === 0) {
+        return res
+          .status(400)
+          .json({ msg: 'Formulário não encontrado na base de dados.' })
+      }
+
+      // Atribuindo dados do formulário
+      const formId = formQuery[0].form_id
+      const formTitle = formQuery[0].form_title
+      const formDescription = formQuery[0].form_description
+      const formCreatedAt = formQuery[0].form_created_at
+
+      // Atribuindo dados dos valores
+      /* const values = formQuery.map(form => ({
+        value: form.fieldUserValue_value,
+        user: form.user_name,
+        field_id: form.user_field_id,
+        created_at: form.value_created_at
+      })) */
+
+      // Atribuindo dados dos campos do formuçário
+      const fields = formQuery.map(form => ({
+        id: form.field_id,
+        name: form.field_name,
+        description: form.field_description,
+        created_at: form.field_created_at
+      }))
+
+      // Criando array auxiliar e funções para remover campos duplicados
+      // const fieldsReduced = []
+
+      /* fields.forEach(field => {
+        // Atribuindo valores aos seus respectivos campos
+        values.forEach(value => {
+          if (field.id === value.field_id) {
+            field.values.push({
+              value: value.value,
+              user: value.user,
+              created_at: value.created_at
+            })
+          }
+        })
+
+        // Removendo campos duplicados
+        const duplicated =
+          fieldsReduced.findIndex(redField => {
+            return field.id === redField.id
+          }) > -1
+
+        if (!duplicated) {
+          fieldsReduced.push(field)
+        }
+      }) */
+
+      // Setando dados finais do formulário
+      const form = {
+        id: formId,
+        title: formTitle,
+        description: formDescription,
+        created_at: formCreatedAt,
+        fields
+      }
+
+      return res.json(form)
+    } catch (err) {
+      return res.status(500).json({
+        msg:
+          'Erro interno do servidor. Por favor, tente novamente ou contate o suporte. '
+      })
+    }
   }
 }
 

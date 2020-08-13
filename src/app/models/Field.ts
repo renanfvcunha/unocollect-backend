@@ -54,5 +54,5 @@ export class Field {
     type => FieldUserValue,
     fieldUserValue => fieldUserValue.field
   )
-  fieldUserValue: FieldUserValue[]
+  fieldsUserValue: FieldUserValue[]
 }

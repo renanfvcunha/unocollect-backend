@@ -1,6 +1,7 @@
 import { Router } from 'express'
 
 import UserValidator from './app/validators/UserValidator'
+import FillValitador from './app/validators/FillValitador'
 
 import UserController from './app/controllers/UserController'
 import SessionController from './app/controllers/SessionController'
@@ -9,6 +10,7 @@ import isAdminMiddleware from './app/middlewares/isAdmin'
 import FormController from './app/controllers/FormController'
 import CategoryController from './app/controllers/CategoryController'
 import FillController from './app/controllers/FillController'
+import ValueController from './app/controllers/ValueController'
 
 const routes = Router()
 
@@ -17,8 +19,10 @@ routes.post('/session', SessionController.store)
 // Middleware de autenticação. Todas as rotas abaixo irão exigir autenticação do usuário
 routes.use(authMiddleware)
 
-// Rota de inserção de dados do formulario
-routes.post('/fills/:id', FillController.store)
+routes.get('/fills', FillController.index)
+routes.post('/fills/:id', FillValitador.store, FillController.store)
+
+routes.get('/forms/:id', FormController.show)
 
 // Middleware de verificação de admin. Todas as rotas abaixo só serão acessíveis por administradores.
 routes.use(isAdminMiddleware)
@@ -33,7 +37,9 @@ routes.get('/categories', CategoryController.index)
 routes.post('/categories', CategoryController.store)
 
 routes.get('/forms', FormController.index)
-routes.get('/forms/:id', FormController.show)
+
 routes.post('/forms', FormController.store)
+
+routes.get('/values/:formId', ValueController.show)
 
 export default routes

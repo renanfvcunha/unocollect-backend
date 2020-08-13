@@ -20,7 +20,7 @@ export class FieldUserValue {
 
   @ManyToOne(
     type => Field,
-    field => field.fieldUserValue,
+    field => field.fieldsUserValue,
     {
       onUpdate: 'CASCADE',
       onDelete: 'CASCADE',

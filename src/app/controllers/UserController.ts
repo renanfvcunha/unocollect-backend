@@ -17,51 +17,55 @@ class UserController {
   public async index (req: Request, res: Response): Promise<Response> {
     const { per_page, page, search } = req.query
 
-    // Buscando total de registros
-    let total: number
-    const totalCount = await getRepository(User).count()
-    const totalFiltered = await getRepository(User)
-      .createQueryBuilder()
-      .select()
-      .where('name like :name', { name: '%' + search + '%' })
-      .orWhere('username like :username', {
-        username: '%' + search + '%'
-      })
-      .getCount()
-
-    // Verificando se registro será ou não filtrado
-    let usersQuery = []
-    if (search) {
-      usersQuery = await getRepository(User)
+    try {
+      // Buscando total de registros
+      let total: number
+      const totalCount = await getRepository(User).count()
+      const totalFiltered = await getRepository(User)
         .createQueryBuilder()
-        .select(['id', 'registration', 'name', 'username', 'admin'])
+        .select()
         .where('name like :name', { name: '%' + search + '%' })
         .orWhere('username like :username', {
           username: '%' + search + '%'
         })
-        .limit(Number(per_page))
-        .offset((Number(page) - 1) * Number(per_page))
-        .execute()
+        .getCount()
 
-      total = totalFiltered
-    } else {
-      usersQuery = await getRepository(User)
-        .createQueryBuilder()
-        .select(['id', 'registration', 'name', 'username', 'admin'])
-        .limit(Number(per_page))
-        .offset((Number(page) - 1) * Number(per_page))
-        .orderBy('id', 'DESC')
-        .execute()
+      // Verificando se registro será ou não filtrado
+      let usersQuery = []
+      if (search) {
+        usersQuery = await getRepository(User)
+          .createQueryBuilder()
+          .select(['id', 'registration', 'name', 'username', 'admin'])
+          .where('name like :name', { name: '%' + search + '%' })
+          .orWhere('username like :username', {
+            username: '%' + search + '%'
+          })
+          .limit(Number(per_page))
+          .offset((Number(page) - 1) * Number(per_page))
+          .execute()
 
-      total = totalCount
+        total = totalFiltered
+      } else {
+        usersQuery = await getRepository(User)
+          .createQueryBuilder()
+          .select(['id', 'registration', 'name', 'username', 'admin'])
+          .limit(Number(per_page))
+          .offset((Number(page) - 1) * Number(per_page))
+          .orderBy('id', 'DESC')
+          .execute()
+
+        total = totalCount
+      }
+
+      const users = usersQuery.map(user => ({
+        ...user,
+        admin: user.admin ? 'Sim' : 'Não'
+      }))
+
+      return res.json({ users, total, page: Number(page) })
+    } catch (error) {
+      return res.status(500).json(error)
     }
-
-    const users = usersQuery.map(user => ({
-      ...user,
-      admin: user.admin ? 'Sim' : 'Não'
-    }))
-
-    return res.json({ users, total, page: Number(page) })
   }
 
   public async store (req: Request, res: Response): Promise<Response> {

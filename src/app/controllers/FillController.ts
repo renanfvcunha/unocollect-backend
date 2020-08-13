@@ -3,6 +3,7 @@ import { getRepository, getManager } from 'typeorm'
 import { FieldUserValue } from '../models/FieldUserValue'
 import { UserForm } from '../models/UserForm'
 import { FormStatus } from '../models/FormStatus'
+import { Form } from '../models/Form'
 
 interface UserRequest extends Request {
   userId: number
@@ -25,6 +26,31 @@ interface ValuesWithId {
 }
 
 class FillController {
+  public async index (req: UserRequest, res: Response): Promise<Response> {
+    const userId = req.userId
+
+    try {
+      const forms = await getRepository(Form)
+        .createQueryBuilder('form')
+        .select([
+          'form.id as id',
+          'form.title as title',
+          'form.description as description'
+        ])
+        .innerJoin('form.status', 'formStatus')
+        .where('formStatus.user_id = :userId', { userId })
+        .andWhere('formStatus.status = 0')
+        .getRawMany()
+
+      return res.json(forms)
+    } catch (err) {
+      return res.status(500).json({
+        msg:
+          'Erro interno do servidor. Por favor, tente novamente ou contate o suporte.'
+      })
+    }
+  }
+
   public async store (req: UserRequest, res: Response): Promise<Response> {
     const userId = req.userId
     const { id } = req.params
