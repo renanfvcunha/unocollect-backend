@@ -11,6 +11,7 @@ import FormController from './app/controllers/FormController'
 import CategoryController from './app/controllers/CategoryController'
 import FillController from './app/controllers/FillController'
 import ValueController from './app/controllers/ValueController'
+import UserFormController from './app/controllers/UserFormController'
 
 const routes = Router()
 
@@ -41,5 +42,7 @@ routes.get('/forms', FormController.index)
 routes.post('/forms', FormController.store)
 
 routes.get('/values/:formId', ValueController.show)
+
+routes.get('/userform/:formId', UserFormController.show)
 
 export default routes

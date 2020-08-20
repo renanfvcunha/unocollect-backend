@@ -33,20 +33,25 @@ class FillController {
       const forms = await getRepository(Form)
         .createQueryBuilder('form')
         .select([
-          'form.id as id',
-          'form.title as title',
-          'form.description as description'
+          'form.id',
+          'form.title',
+          'form.description',
+          'field.id',
+          'field.name',
+          'field.description'
         ])
+        .leftJoin('form.fields', 'field')
         .innerJoin('form.status', 'formStatus')
         .where('formStatus.user_id = :userId', { userId })
         .andWhere('formStatus.status = 0')
-        .getRawMany()
+        .getMany()
 
       return res.json(forms)
     } catch (err) {
       return res.status(500).json({
-        msg:
-          'Erro interno do servidor. Por favor, tente novamente ou contate o suporte.'
+        err
+        /* msg:
+          'Erro interno do servidor. Por favor, tente novamente ou contate o suporte.' */
       })
     }
   }
