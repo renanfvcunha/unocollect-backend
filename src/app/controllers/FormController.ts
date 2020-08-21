@@ -49,7 +49,7 @@ class FormController {
           .select([
             'form.id as id',
             'form.title as title',
-            `form.created_at at time zone 'utc' as created_at`,
+            `form.created_at`,
             'category.name as category',
             'COUNT(userForm.id) as fills'
           ])
@@ -74,7 +74,7 @@ class FormController {
           .select([
             'form.id as id',
             'form.title as title',
-            `form.created_at at time zone 'utc' as created_at`,
+            `form.created_at`,
             'category.name as category',
             'COUNT(userForm.id) as fills'
           ])
@@ -185,11 +185,11 @@ class FormController {
           'form.id',
           'form.title',
           'form.description',
-          `form.created_at at time zone 'utc' as form_created_at`,
+          `form.created_at`,
           'field.id',
           'field.name',
           'field.description',
-          `field.created_at at time zone 'utc' as field_created_at`
+          `field.created_at`
           /* 'fieldUserValue.value',
           'fieldUserValue.field_id as user_field_id',
           `fieldUserValue.created_at at time zone 'utc' as value_created_at`,

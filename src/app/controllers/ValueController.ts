@@ -12,7 +12,7 @@ class ValueController {
       .select([
         'field.id',
         'fieldUserValue.value as value',
-        `fieldUserValue.created_at at time zone 'utc' as created_at`,
+        `fieldUserValue.created_at`,
         'user.name as created_by'
       ])
       .leftJoin('field.fieldsUserValue', 'fieldUserValue')

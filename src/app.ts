@@ -24,7 +24,7 @@ class App {
   }
 
   private async database (): Promise<void> {
-    await createConnection()
+    await createConnection().then(() => console.log('DB Connected!'))
   }
 }
 
