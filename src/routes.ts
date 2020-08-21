@@ -1,7 +1,8 @@
 import { Router } from 'express'
+import multer from 'multer'
+import uploadImgs from './config/uploadImgs'
 
 import UserValidator from './app/validators/UserValidator'
-import FillValitador from './app/validators/FillValitador'
 
 import UserController from './app/controllers/UserController'
 import SessionController from './app/controllers/SessionController'
@@ -14,6 +15,7 @@ import ValueController from './app/controllers/ValueController'
 import UserFormController from './app/controllers/UserFormController'
 
 const routes = Router()
+const imgs = multer(uploadImgs)
 
 routes.post('/session', SessionController.store)
 
@@ -21,7 +23,7 @@ routes.post('/session', SessionController.store)
 routes.use(authMiddleware)
 
 routes.get('/fills', FillController.index)
-routes.post('/fills/:id', FillValitador.store, FillController.store)
+routes.post('/fills/:id', imgs.array('image'), FillController.store)
 
 routes.get('/forms/:id', FormController.show)
 

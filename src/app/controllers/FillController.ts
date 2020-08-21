@@ -4,6 +4,7 @@ import { FieldUserValue } from '../models/FieldUserValue'
 import { UserForm } from '../models/UserForm'
 import { FormStatus } from '../models/FormStatus'
 import { Form } from '../models/Form'
+import { ImageUserForm } from '../models/ImageUserForm'
 
 interface UserRequest extends Request {
   userId: number
@@ -49,9 +50,8 @@ class FillController {
       return res.json(forms)
     } catch (err) {
       return res.status(500).json({
-        err
-        /* msg:
-          'Erro interno do servidor. Por favor, tente novamente ou contate o suporte.' */
+        msg:
+          'Erro interno do servidor. Por favor, tente novamente ou contate o suporte.'
       })
     }
   }
@@ -60,9 +60,20 @@ class FillController {
     const userId = req.userId
     const { id } = req.params
     const { latitude, longitude }: Location = req.body
-    const values: Values[] = req.body.values
+    const values: string[] = req.body.values
+    const valuesParsed = values.map(value => JSON.parse(value))
+    const files = req.files
 
-    // Verificando se usuário já preencheu o formulário
+    const filenames: string[] = []
+    if (files) {
+      for (let i = 0; i < files.length; i++) {
+        filenames.push(files[i].filename)
+      }
+    }
+
+    /**
+     * Verificando se usuário já preencheu o formulário
+     */
     const userForm = await getRepository(UserForm).find({
       where: { user: userId, form: Number(id) }
     })
@@ -77,14 +88,23 @@ class FillController {
           .createQueryBuilder()
           .insert()
           .into(UserForm)
-          .values([{ latitude, longitude, user: userId, form: Number(id) }])
+          .values([
+            {
+              latitude: Number(latitude),
+              longitude: Number(longitude),
+              user: userId,
+              form: Number(id)
+            }
+          ])
           .execute()
 
-        // Capturando id inserido na tabela pivô
+        /**
+         * Capturando id inserido na tabela pivô
+         */
         const userFormId: number = result.identifiers[0].id
 
         // Inserindo as respostas na tabela de valores
-        const valuesWithId = values.map((value: ValuesWithId) => ({
+        const valuesWithId = valuesParsed.map((value: ValuesWithId) => ({
           userForm: userFormId,
           field: value.fieldId,
           value: value.value
@@ -97,7 +117,26 @@ class FillController {
           .values(valuesWithId)
           .execute()
 
-        // Atualizando status do formulario de usuários
+        /**
+         * Inserindo nomes das imagens na tabela de imagens
+         */
+        if (filenames.length !== 0) {
+          const imagesWithId = filenames.map((filename: string) => ({
+            userForm: userFormId,
+            name: filename
+          }))
+
+          await transactionalEntityManager
+            .createQueryBuilder()
+            .insert()
+            .into(ImageUserForm)
+            .values(imagesWithId)
+            .execute()
+        }
+
+        /**
+         * Atualizando status do formulario de usuários
+         */
         await transactionalEntityManager
           .createQueryBuilder()
           .update(FormStatus)

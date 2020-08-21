@@ -32,7 +32,7 @@ export class ImageUserForm {
   userForm: number
 
   @Column({
-    length: 25
+    length: 30
   })
   name: string
 
