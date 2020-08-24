@@ -64,7 +64,10 @@ class UserController {
 
       return res.json({ users, total, page: Number(page) })
     } catch (error) {
-      return res.status(500).json(error)
+      return res.status(500).json({
+        msg:
+          'Erro Interno do Servidor. Por favor, tente novamente ou contate o suporte.'
+      })
     }
   }
 

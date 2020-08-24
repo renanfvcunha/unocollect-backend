@@ -49,17 +49,17 @@ export class UserForm {
   })
   form: number
 
-  @Column('decimal')
+  @Column({ type: 'decimal', precision: 10, scale: 8 })
   latitude: number
 
-  @Column('decimal')
+  @Column({ type: 'decimal', precision: 11, scale: 8 })
   longitude: number
 
   @CreateDateColumn()
-  created_at: number
+  created_at: string
 
   @UpdateDateColumn()
-  updated_at: number
+  updated_at: string
 
   @OneToMany(
     type => ImageUserForm,

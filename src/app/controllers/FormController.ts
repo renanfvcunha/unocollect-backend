@@ -5,6 +5,7 @@ import { Form } from '../models/Form'
 import { Field } from '../models/Field'
 import { User } from '../models/User'
 import { FormStatus } from '../models/FormStatus'
+import Utils from '../utils'
 
 interface FormInterface {
   title: string
@@ -49,7 +50,7 @@ class FormController {
           .select([
             'form.id as id',
             'form.title as title',
-            `form.created_at`,
+            `form.created_at as created_at`,
             'category.name as category',
             'COUNT(userForm.id) as fills'
           ])
@@ -74,7 +75,7 @@ class FormController {
           .select([
             'form.id as id',
             'form.title as title',
-            `form.created_at`,
+            `form.created_at as created_at`,
             'category.name as category',
             'COUNT(userForm.id) as fills'
           ])
@@ -93,7 +94,8 @@ class FormController {
 
       const forms = formsQuery.map((form: FormInterface) => ({
         ...form,
-        category: form.category !== null ? form.category : 'Sem Categoria'
+        category: form.category !== null ? form.category : 'Sem Categoria',
+        created_at: Utils.utcToLocalTime(form.created_at)
       }))
 
       return res.json({ forms, total, page: Number(page) })

@@ -61,6 +61,7 @@ class FillController {
     const { id } = req.params
     const { latitude, longitude }: Location = req.body
     const values: string[] = req.body.values
+    const date: string = req.body.date
     const valuesParsed = values.map(value => JSON.parse(value))
     const files = req.files
 
@@ -93,7 +94,9 @@ class FillController {
               latitude: Number(latitude),
               longitude: Number(longitude),
               user: userId,
-              form: Number(id)
+              form: Number(id),
+              created_at: date,
+              updated_at: date
             }
           ])
           .execute()
@@ -148,7 +151,9 @@ class FillController {
 
       return res.json({ msg: 'Formulário preenchido com sucesso!' })
     } catch (err) {
-      return res.status(500).json(err)
+      return res
+        .status(500)
+        .json({ msg: 'Houve um erro ao preencher o formulário.' })
     }
   }
 }
