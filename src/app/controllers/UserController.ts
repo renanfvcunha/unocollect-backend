@@ -5,7 +5,6 @@ import bcrypt from 'bcryptjs'
 
 interface IUser {
   id?: number
-  registration?: number
   name?: string
   username?: string
   admin?: boolean
@@ -73,14 +72,13 @@ class UserController {
 
   public async store (req: Request, res: Response): Promise<Response> {
     try {
-      const { registration, name, username, admin, password }: IUser = req.body
+      const { name, username, admin, password }: IUser = req.body
 
       // Criptografando senha do usuario
       const passwordHash = await bcrypt.hash(password, 8)
 
       // Adicionando usuário
       const user = new User()
-      user.registration = registration
       user.name = name
       user.username = username
       user.admin = admin
@@ -109,7 +107,6 @@ class UserController {
     }
 
     return res.json({
-      registration: user.registration,
       name: user.name,
       username: user.username,
       admin: user.admin
@@ -120,7 +117,6 @@ class UserController {
     const { id } = req.params
 
     const user = new User()
-    user.registration = req.body.registration
     user.name = req.body.name
     user.username = req.body.username
     if (req.body.password) {

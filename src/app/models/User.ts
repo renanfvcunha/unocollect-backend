@@ -17,9 +17,6 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number
 
-  @Column()
-  registration: number
-
   @Column({
     length: 100
   })
