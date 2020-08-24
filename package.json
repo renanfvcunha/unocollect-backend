@@ -1,8 +1,8 @@
 {
-   "name": "datacollector",
+   "name": "uno_collect",
    "version": "1.0.0",
    "description": "App to collect data from anywhere",
-   "main": "index.js",
+   "main": "server.js",
    "author": "R.C. Informatica",
    "license": "proprietary",
    "private": true,
