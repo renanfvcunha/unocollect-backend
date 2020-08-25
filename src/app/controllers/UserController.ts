@@ -34,7 +34,7 @@ class UserController {
       if (search) {
         usersQuery = await getRepository(User)
           .createQueryBuilder()
-          .select(['id', 'registration', 'name', 'username', 'admin'])
+          .select(['id', 'name', 'username', 'admin'])
           .where('name like :name', { name: '%' + search + '%' })
           .orWhere('username like :username', {
             username: '%' + search + '%'
@@ -47,7 +47,7 @@ class UserController {
       } else {
         usersQuery = await getRepository(User)
           .createQueryBuilder()
-          .select(['id', 'registration', 'name', 'username', 'admin'])
+          .select(['id', 'name', 'username', 'admin'])
           .limit(Number(per_page))
           .offset((Number(page) - 1) * Number(per_page))
           .orderBy('id', 'DESC')
