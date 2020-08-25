@@ -37,7 +37,7 @@ export class FieldUserValue {
     userForm => userForm.fieldUserValue,
     {
       onUpdate: 'CASCADE',
-      onDelete: 'NO ACTION',
+      onDelete: 'CASCADE',
       nullable: false
     }
   )

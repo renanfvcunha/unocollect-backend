@@ -170,9 +170,9 @@ class FormController {
       })
       return res.json({ msg: 'Formulário criado com sucesso!' })
     } catch (err) {
-      return res
-        .status(500)
-        .json({ msg: 'Erro Interno do servidor. Por favor, tente novamente.' })
+      return res.status(500).json({
+        msg: 'Erro Interno do servidor. Tente novamente ou contate o suporte.'
+      })
     }
   }
 
@@ -272,8 +272,26 @@ class FormController {
       return res.json(form)
     } catch (err) {
       return res.status(500).json({
-        msg:
-          'Erro interno do servidor. Por favor, tente novamente ou contate o suporte. '
+        msg: 'Erro interno do servidor. Tente novamente ou contate o suporte.'
+      })
+    }
+  }
+
+  public async destroy (req: Request, res: Response) {
+    const { id } = req.params
+
+    try {
+      const deletedForm = await getRepository(Form).delete(id)
+
+      if (deletedForm.affected === 0) {
+        return res.status(500).json({ msg: 'Erro ao remover formulário.' })
+      }
+
+      return res.json({ msg: 'Formulário removido com sucesso!' })
+    } catch (err) {
+      return res.status(500).json({
+        err
+        /* msg: 'Erro interno do servidor. Tente novamente ou contate o suporte.' */
       })
     }
   }

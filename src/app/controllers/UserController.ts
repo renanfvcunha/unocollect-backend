@@ -157,13 +157,19 @@ class UserController {
   public async destroy (req: Request, res: Response): Promise<Response> {
     const { id } = req.params
 
-    const deletedUser = await getRepository(User).delete(id)
+    try {
+      const deletedUser = await getRepository(User).delete(id)
 
-    if (deletedUser.affected === 0) {
-      return res.status(500).json({ msg: 'Erro ao remover usuário.' })
+      if (deletedUser.affected === 0) {
+        return res.status(500).json({ msg: 'Erro ao remover usuário.' })
+      }
+
+      return res.json({ msg: 'Usuário removido com sucesso!' })
+    } catch (err) {
+      return res.status(500).json({
+        msg: 'Erro interno do servidor. Tente novamente ou contate o suporte.'
+      })
     }
-
-    return res.json({ msg: 'Usuário removido com sucesso!' })
   }
 }
 

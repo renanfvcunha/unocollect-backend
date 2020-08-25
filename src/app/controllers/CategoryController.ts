@@ -13,9 +13,15 @@ class CategoryController {
     const category = new Category()
     category.name = req.body.name
 
-    const newCategory = await getRepository(Category).save(category)
+    try {
+      await getRepository(Category).save(category)
 
-    return res.json(newCategory)
+      return res.json({ msg: 'Categoria adicionada com sucesso!' })
+    } catch (err) {
+      return res.status(500).json({
+        msg: 'Erro interno do servidor. Tente novamente ou contate o suporte. '
+      })
+    }
   }
 }
 

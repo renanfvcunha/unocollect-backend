@@ -26,7 +26,7 @@ export class UserForm {
     user => user.userForm,
     {
       onUpdate: 'CASCADE',
-      onDelete: 'NO ACTION',
+      onDelete: 'CASCADE',
       nullable: false
     }
   )
@@ -40,7 +40,7 @@ export class UserForm {
     form => form.userForm,
     {
       onUpdate: 'CASCADE',
-      onDelete: 'NO ACTION',
+      onDelete: 'CASCADE',
       nullable: false
     }
   )

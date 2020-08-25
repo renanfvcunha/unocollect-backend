@@ -22,7 +22,7 @@ export class ImageUserForm {
     userForm => userForm.imageUserForm,
     {
       onUpdate: 'CASCADE',
-      onDelete: 'NO ACTION',
+      onDelete: 'CASCADE',
       nullable: false
     }
   )
