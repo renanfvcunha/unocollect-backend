@@ -5,6 +5,7 @@ import { UserForm } from '../models/UserForm'
 import { FormStatus } from '../models/FormStatus'
 import { Form } from '../models/Form'
 import { ImageUserForm } from '../models/ImageUserForm'
+import { Field } from '../models/Field'
 
 interface UserRequest extends Request {
   userId: number
@@ -154,6 +155,68 @@ class FillController {
       return res
         .status(500)
         .json({ msg: 'Houve um erro ao preencher o formulário.' })
+    }
+  }
+
+  public async show (req: Request, res: Response) {
+    const { id } = req.params
+    const { per_page, page } = req.query
+
+    try {
+      // Buscando total de registros
+      const totalCount = await getRepository(Field)
+        .createQueryBuilder('field')
+        .select(['field.id', 'fieldsUserValue.id'])
+        .leftJoin('field.fieldsUserValue', 'fieldsUserValue')
+        .where('field.form = :id', { id })
+        .getRawMany()
+
+      const fillsQuery = await getRepository(Field)
+        .createQueryBuilder('field')
+        .select([
+          'field.id',
+          'field.name',
+          'fieldsUserValue.id',
+          'fieldsUserValue.value',
+          'fieldsUserValue.created_at',
+          'userForm.id',
+          'user.id',
+          'user.name'
+        ])
+        .leftJoin('field.fieldsUserValue', 'fieldsUserValue')
+        .leftJoin('fieldsUserValue.userForm', 'userForm')
+        .leftJoin('userForm.user', 'user')
+        .where('field.form = :id', { id })
+        .limit(Number(per_page))
+        .offset((Number(page) - 1) * Number(per_page))
+        .getMany()
+
+      const fillsParsed = []
+      fillsQuery.map(field => ({
+        values: field.fieldsUserValue.map(fieldUserValue =>
+          fillsParsed.push({
+            field: field.name,
+            value: fieldUserValue.value,
+            created_at: fieldUserValue.created_at,
+            created_by: fieldUserValue.userForm
+          })
+        )
+      }))
+
+      const fillsParsedWithName = fillsParsed.map(newFill => ({
+        ...newFill,
+        created_by: newFill.created_by.user.name
+      }))
+
+      return res.json({
+        fills: fillsParsedWithName,
+        totalCount: totalCount.length,
+        page: Number(page)
+      })
+    } catch (err) {
+      return res.status(500).json({
+        msg: 'Erro interno do servidor. Tente novamente ou contate o suporte.'
+      })
     }
   }
 }

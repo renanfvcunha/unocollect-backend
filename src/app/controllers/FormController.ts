@@ -290,8 +290,7 @@ class FormController {
       return res.json({ msg: 'Formulário removido com sucesso!' })
     } catch (err) {
       return res.status(500).json({
-        err
-        /* msg: 'Erro interno do servidor. Tente novamente ou contate o suporte.' */
+        msg: 'Erro interno do servidor. Tente novamente ou contate o suporte.'
       })
     }
   }

@@ -42,6 +42,8 @@ routes.post('/categories', CategoryController.store)
 routes.get('/forms', FormController.index)
 routes.delete('/forms/:id', FormController.destroy)
 
+routes.get('/fills/:id', FillController.show)
+
 routes.post('/forms', FormController.store)
 
 routes.get('/values/:formId', ValueController.show)
