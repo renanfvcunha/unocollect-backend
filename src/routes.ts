@@ -33,7 +33,7 @@ routes.use(isAdminMiddleware)
 routes.get('/users', UserController.index)
 routes.get('/users/:id', UserController.show)
 routes.post('/users', UserValidator.store, UserController.store)
-routes.put('/users/:id', UserController.update)
+routes.put('/users/:id', UserValidator.update, UserController.update)
 routes.delete('/users/:id', UserController.destroy)
 
 routes.get('/categories', CategoryController.index)

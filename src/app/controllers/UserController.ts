@@ -119,13 +119,10 @@ class UserController {
     const user = new User()
     user.name = req.body.name
     user.username = req.body.username
+    user.admin = req.body.admin
     if (req.body.password) {
       // Verificando se senhas coincidem
-      const { password, passwordConf }: IUser = req.body
-
-      if (password !== passwordConf) {
-        return res.status(400).json({ msg: 'Senhas não coincidem' })
-      }
+      const { password }: IUser = req.body
 
       // Criptografando senha do usuario
       const passwordHash = await bcrypt.hash(password, 8)
