@@ -13,7 +13,7 @@ class UserFormController {
           'userForm.id as id',
           'userForm.latitude as latitude',
           'userForm.longitude as longitude',
-          `userForm.created_at`,
+          'userForm.created_at',
           'user.name as created_by'
         ])
         .innerJoin('userForm.user', 'user')
