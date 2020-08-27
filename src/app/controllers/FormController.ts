@@ -186,21 +186,13 @@ class FormController {
           'form.id',
           'form.title',
           'form.description',
-          `form.created_at`,
+          'form.created_at',
           'field.id',
           'field.name',
           'field.description',
-          `field.created_at`
-          /* 'fieldUserValue.value',
-          'fieldUserValue.field_id as user_field_id',
-          `fieldUserValue.created_at at time zone 'utc' as value_created_at`,
-          'userForm.id',
-          'user.name' */
+          'field.created_at'
         ])
         .leftJoin('form.fields', 'field')
-        /* .leftJoin('field.fieldsUserValue', 'fieldUserValue')
-        .leftJoin('fieldUserValue.userForm', 'userForm')
-        .leftJoin('userForm.user', 'user') */
         .where('form.id = :id', { id })
         .getRawMany()
 
@@ -217,47 +209,13 @@ class FormController {
       const formDescription = formQuery[0].form_description
       const formCreatedAt = formQuery[0].form_created_at
 
-      // Atribuindo dados dos valores
-      /* const values = formQuery.map(form => ({
-        value: form.fieldUserValue_value,
-        user: form.user_name,
-        field_id: form.user_field_id,
-        created_at: form.value_created_at
-      })) */
-
-      // Atribuindo dados dos campos do formuçário
+      // Atribuindo dados dos campos do formulário
       const fields = formQuery.map(form => ({
         id: form.field_id,
         name: form.field_name,
         description: form.field_description,
         created_at: form.field_created_at
       }))
-
-      // Criando array auxiliar e funções para remover campos duplicados
-      // const fieldsReduced = []
-
-      /* fields.forEach(field => {
-        // Atribuindo valores aos seus respectivos campos
-        values.forEach(value => {
-          if (field.id === value.field_id) {
-            field.values.push({
-              value: value.value,
-              user: value.user,
-              created_at: value.created_at
-            })
-          }
-        })
-
-        // Removendo campos duplicados
-        const duplicated =
-          fieldsReduced.findIndex(redField => {
-            return field.id === redField.id
-          }) > -1
-
-        if (!duplicated) {
-          fieldsReduced.push(field)
-        }
-      }) */
 
       // Setando dados finais do formulário
       const form = {
