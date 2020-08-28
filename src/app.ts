@@ -1,5 +1,6 @@
 import 'reflect-metadata'
 import express from 'express'
+import path from 'path'
 import { createConnection } from 'typeorm'
 import cors from 'cors'
 import routes from './routes'
@@ -17,6 +18,10 @@ class App {
   private middlewares (): void {
     this.express.use(cors())
     this.express.use(express.json())
+    this.express.use(
+      '/uploads',
+      express.static(path.resolve(__dirname, 'uploads', 'formImages'))
+    )
   }
 
   private routes (): void {
