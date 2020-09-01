@@ -2,7 +2,6 @@ import { Request, Response } from 'express'
 import { getRepository, getManager } from 'typeorm'
 import { FieldUserValue } from '../models/FieldUserValue'
 import { UserForm } from '../models/UserForm'
-import { FormStatus } from '../models/FormStatus'
 import { Form } from '../models/Form'
 import { ImageUserForm } from '../models/ImageUserForm'
 import { Field } from '../models/Field'
@@ -28,9 +27,7 @@ interface ValuesWithId {
 }
 
 class FillController {
-  public async index (req: UserRequest, res: Response): Promise<Response> {
-    const userId = req.userId
-
+  public async index (req: Request, res: Response): Promise<Response> {
     try {
       const forms = await getRepository(Form)
         .createQueryBuilder('form')
@@ -43,9 +40,7 @@ class FillController {
           'field.description'
         ])
         .leftJoin('form.fields', 'field')
-        .innerJoin('form.status', 'formStatus')
-        .where('formStatus.user_id = :userId', { userId })
-        .andWhere('formStatus.status = 0')
+        .where('form.status = 1')
         .getMany()
 
       return res.json(forms)
@@ -71,16 +66,6 @@ class FillController {
       for (let i = 0; i < files.length; i++) {
         filenames.push(files[i].filename)
       }
-    }
-
-    /**
-     * Verificando se usuário já preencheu o formulário
-     */
-    const userForm = await getRepository(UserForm).find({
-      where: { user: userId, form: Number(id) }
-    })
-    if (userForm.length !== 0) {
-      return res.status(401).json({ msg: 'Você já preencheu este formulário' })
     }
 
     try {
@@ -137,17 +122,6 @@ class FillController {
             .values(imagesWithId)
             .execute()
         }
-
-        /**
-         * Atualizando status do formulario de usuários
-         */
-        await transactionalEntityManager
-          .createQueryBuilder()
-          .update(FormStatus)
-          .set({ status: 1 })
-          .where('user_id = :userId', { userId })
-          .andWhere('form_id = :formId', { formId: Number(id) })
-          .execute()
       })
 
       return res.json({ msg: 'Formulário preenchido com sucesso!' })

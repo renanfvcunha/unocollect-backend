@@ -41,11 +41,11 @@ routes.get('/categories', CategoryController.index)
 routes.post('/categories', CategoryController.store)
 
 routes.get('/forms', FormController.index)
+routes.post('/forms', FormController.store)
+routes.put('/forms/:id', FormController.update)
 routes.delete('/forms/:id', FormController.destroy)
 
 routes.get('/fills/:id', FillController.show)
-
-routes.post('/forms', FormController.store)
 
 routes.get('/values/:formId', ValueController.show)
 

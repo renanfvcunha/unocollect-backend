@@ -3,14 +3,14 @@ import { getRepository, getManager } from 'typeorm'
 
 import { Form } from '../models/Form'
 import { Field } from '../models/Field'
-import { User } from '../models/User'
-import { FormStatus } from '../models/FormStatus'
+import routes from '../../routes'
 
 interface FormInterface {
   title: string
   description?: string
   created_at?: Date
   category?: number
+  status?: number
 }
 
 interface Fields {
@@ -51,7 +51,8 @@ class FormController {
             'form.title as title',
             'form.created_at as created_at',
             'category.name as category',
-            'COUNT(userForm.id) as fills'
+            'COUNT(userForm.id) as fills',
+            'form.status as status'
           ])
           .leftJoin('form.category', 'category')
           .leftJoin('form.userForm', 'userForm')
@@ -76,7 +77,8 @@ class FormController {
             'form.title as title',
             'form.created_at as created_at',
             'category.name as category',
-            'COUNT(userForm.id) as fills'
+            'COUNT(userForm.id) as fills',
+            'form.status as status'
           ])
           .leftJoin('form.category', 'category')
           .leftJoin('form.userForm', 'userForm')
@@ -94,6 +96,7 @@ class FormController {
       const forms = formsQuery.map((form: FormInterface) => ({
         ...form,
         category: form.category !== null ? form.category : 'Sem Categoria',
+        status: form.status === 1 ? 'Ativo' : 'Inativo',
         created_at: form.created_at
       }))
 
@@ -149,24 +152,8 @@ class FormController {
           .into(Field)
           .values(fieldsWithId)
           .execute()
-
-        // Criando os status do formulario para cada usuário
-        const users = await transactionalEntityManager
-          .getRepository(User)
-          .find({ select: ['id'] })
-
-        const usersId = users.map(user => ({
-          form: formId,
-          user: user.id
-        }))
-
-        await transactionalEntityManager
-          .createQueryBuilder()
-          .insert()
-          .into(FormStatus)
-          .values(usersId)
-          .execute()
       })
+
       return res.json({ msg: 'Formulário criado com sucesso!' })
     } catch (err) {
       return res.status(500).json({
@@ -180,50 +167,29 @@ class FormController {
 
     try {
       // Buscando formulários com campos e valores
-      const formQuery = await getRepository(Form)
+      const form = await getRepository(Form)
         .createQueryBuilder('form')
         .select([
           'form.id',
           'form.title',
           'form.description',
           'form.created_at',
+          'category.id',
           'field.id',
           'field.name',
           'field.description',
           'field.created_at'
         ])
+        .leftJoin('form.category', 'category')
         .leftJoin('form.fields', 'field')
         .where('form.id = :id', { id })
-        .getRawMany()
+        .getOne()
 
       // Verificando se houve retorno
-      if (formQuery.length === 0) {
+      if (!form) {
         return res
-          .status(400)
+          .status(404)
           .json({ msg: 'Formulário não encontrado na base de dados.' })
-      }
-
-      // Atribuindo dados do formulário
-      const formId = formQuery[0].form_id
-      const formTitle = formQuery[0].form_title
-      const formDescription = formQuery[0].form_description
-      const formCreatedAt = formQuery[0].form_created_at
-
-      // Atribuindo dados dos campos do formulário
-      const fields = formQuery.map(form => ({
-        id: form.field_id,
-        name: form.field_name,
-        description: form.field_description,
-        created_at: form.field_created_at
-      }))
-
-      // Setando dados finais do formulário
-      const form = {
-        id: formId,
-        title: formTitle,
-        description: formDescription,
-        created_at: formCreatedAt,
-        fields
       }
 
       return res.json(form)
@@ -231,6 +197,45 @@ class FormController {
       return res.status(500).json({
         msg: 'Erro interno do servidor. Tente novamente ou contate o suporte.'
       })
+    }
+  }
+
+  public async update (req: Request, res: Response) {
+    const { id } = req.params
+    const { status } = req.body
+    // const { title, description, status, category }: FormInterface = req.body
+    // const fields: Fields[] = req.body.fields
+
+    // Verificando se o formulário existe
+    const formToEdit = await getRepository(Form).findOne(id)
+
+    if (!formToEdit) {
+      return res.status(404).json({ msg: 'Formulário não encontrado!' })
+    }
+
+    if (status) {
+      try {
+        const form = new Form()
+        form.status = status
+
+        // Editando Formulário
+        const editedForm = await getRepository(Form).update(id, form)
+
+        // Verificando se não houve linha alterada
+        if (editedForm.affected === 0) {
+          return res.status(500).json({ msg: 'Erro ao editar o formulário.' })
+        }
+
+        const newFormStatus = await getRepository(Form).findOne(id)
+
+        if (newFormStatus.status === 1) {
+          return res.json({ msg: 'Formulário ativado com sucesso!' })
+        } else {
+          return res.json({ msg: 'Formulário desativado com sucesso!' })
+        }
+      } catch (err) {
+        return res.status(500).json(err)
+      }
     }
   }
 

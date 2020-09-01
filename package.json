@@ -1,5 +1,5 @@
 {
-   "name": "uno_collect",
+   "name": "unocollect",
    "version": "1.0.0",
    "description": "App to collect data from anywhere",
    "main": "server.js",

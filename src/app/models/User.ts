@@ -7,7 +7,6 @@ import {
   UpdateDateColumn,
   OneToMany
 } from 'typeorm'
-import { FormStatus } from './FormStatus'
 import { UserForm } from './UserForm'
 
 @Entity({
@@ -42,12 +41,6 @@ export class User {
 
   @UpdateDateColumn()
   updated_at: Date
-
-  @OneToMany(
-    type => FormStatus,
-    status => status.user
-  )
-  status: FormStatus[]
 
   @OneToMany(
     type => UserForm,

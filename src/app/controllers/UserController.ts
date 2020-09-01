@@ -145,9 +145,6 @@ class UserController {
       return res.status(500).json({ msg: 'Erro ao editar usuário.' })
     }
 
-    // Exibindo novas informações do usuário
-    await getRepository(User).findOne(id)
-
     return res.json({ msg: 'Usuário alterado com sucesso!' })
   }
 

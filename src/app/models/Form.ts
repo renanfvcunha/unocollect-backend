@@ -11,7 +11,6 @@ import {
 } from 'typeorm'
 import { Category } from './Category'
 import { Field } from './Field'
-import { FormStatus } from './FormStatus'
 import { UserForm } from './UserForm'
 
 @Entity({
@@ -42,6 +41,11 @@ export class Form {
   @Column('text')
   description: string
 
+  @Column('smallint', {
+    default: 1
+  })
+  status: number
+
   @CreateDateColumn()
   created_at: Date
 
@@ -53,12 +57,6 @@ export class Form {
     field => field.form
   )
   fields: Field[]
-
-  @OneToMany(
-    type => FormStatus,
-    status => status.form
-  )
-  status: FormStatus[]
 
   @OneToMany(
     type => UserForm,
