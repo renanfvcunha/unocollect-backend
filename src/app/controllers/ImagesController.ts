@@ -11,7 +11,11 @@ class ImageController {
     try {
       const usersQuery = await getRepository(UserForm)
         .createQueryBuilder('userForm')
-        .select(['userForm.user as id', 'user.name as name'])
+        .select([
+          'userForm.id as id_user_form',
+          'userForm.user as id_user',
+          'user.name as name'
+        ])
         .innerJoin('userForm.user', 'user')
         .where('userForm.form = :formId', { formId })
         .orderBy('userForm.user')
@@ -30,7 +34,9 @@ class ImageController {
           .innerJoin('userForm.form', 'form')
           .innerJoin('userForm.user', 'user')
           .where('form.id = :formId', { formId })
-          .andWhere('user.id = :userId', { userId: usersImages[i].id })
+          .andWhere('userForm.id = :userFormId', {
+            userFormId: usersImages[i].id_user_form
+          })
           .getRawMany()
 
         const imgs = formImages.map(

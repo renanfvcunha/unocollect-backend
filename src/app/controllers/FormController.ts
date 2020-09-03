@@ -3,7 +3,6 @@ import { getRepository, getManager } from 'typeorm'
 
 import { Form } from '../models/Form'
 import { Field } from '../models/Field'
-import routes from '../../routes'
 
 interface FormInterface {
   title: string
@@ -129,9 +128,9 @@ class FormController {
           .into(Form)
           .values([
             {
-              category,
               title,
-              description
+              description,
+              category
             }
           ])
           .execute()

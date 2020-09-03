@@ -138,15 +138,15 @@ class FillController {
     try {
       const usersFormsQuery = await getRepository(UserForm)
         .createQueryBuilder('userForm')
-        .select(['userForm.user'])
+        .select(['userForm.id'])
         .where('userForm.form = :id', { id })
-        .orderBy('userForm.user')
+        .orderBy('userForm.id')
         .getRawMany()
 
-      const users = usersFormsQuery.map(userForm => userForm.user_id)
+      const usersForms = usersFormsQuery.map(userForm => userForm.userForm_id)
 
       const fills = []
-      for (let i = 0; i < users.length; i++) {
+      for (let i = 0; i < usersForms.length; i++) {
         const fillsQuery = await getRepository(Field)
           .createQueryBuilder('field')
           .select([
@@ -163,7 +163,7 @@ class FillController {
           .leftJoin('fieldsUserValue.userForm', 'userForm')
           .leftJoin('userForm.user', 'user')
           .where('field.form = :id', { id })
-          .andWhere('user.id = :user', { user: users[i] })
+          .andWhere('userForm.id = :userForm', { userForm: usersForms[i] })
           .getMany()
 
         const fillsParsed = []
