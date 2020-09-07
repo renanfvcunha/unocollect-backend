@@ -13,7 +13,7 @@ import CategoryController from './app/controllers/CategoryController'
 import FillController from './app/controllers/FillController'
 import ValueController from './app/controllers/ValueController'
 import UserFormController from './app/controllers/UserFormController'
-import ImagesController from './app/controllers/ImagesController'
+import ImageController from './app/controllers/ImageController'
 
 const routes = Router()
 const imgs = multer(uploadImgs)
@@ -51,6 +51,6 @@ routes.get('/values/:formId', ValueController.show)
 
 routes.get('/userform/:formId', UserFormController.show)
 
-routes.get('/images/:formId', ImagesController.index)
+routes.get('/images/:formId', ImageController.index)
 
 export default routes

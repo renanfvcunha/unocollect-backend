@@ -4,7 +4,7 @@ import { getRepository, getManager } from 'typeorm'
 import { Form } from '../models/Form'
 import { Field } from '../models/Field'
 
-interface FormInterface {
+interface IForm {
   title: string
   description?: string
   created_at?: Date
@@ -13,14 +13,12 @@ interface FormInterface {
 }
 
 interface Fields {
-  name: string
+  form?: number
+  name?: string
   description?: string
-}
-
-interface FieldsWithId {
-  form: number
-  name: string
-  description?: string
+  type?: string
+  options?: string
+  required?: boolean
 }
 
 class FormController {
@@ -92,7 +90,7 @@ class FormController {
         total = totalCount
       }
 
-      const forms = formsQuery.map((form: FormInterface) => ({
+      const forms = formsQuery.map((form: IForm) => ({
         ...form,
         category: form.category !== null ? form.category : 'Sem Categoria',
         status: form.status === 1 ? 'Ativo' : 'Inativo',
@@ -106,7 +104,7 @@ class FormController {
   }
 
   public async store (req: Request, res: Response): Promise<Response> {
-    const { title, description, category }: FormInterface = req.body
+    const { title, description, category }: IForm = req.body
     const fields: Fields[] = req.body.fields
 
     // Verificando se já existe formulário com o mesmo título
@@ -139,10 +137,13 @@ class FormController {
         const formId: number = result.identifiers[0].id
 
         // Criando os campos do formulário
-        const fieldsWithId = fields.map((field: FieldsWithId) => ({
+        const fieldsWithId = fields.map((field: Fields) => ({
           form: formId,
           name: field.name,
-          description: field.description
+          description: field.description,
+          type: field.type,
+          options: field.options,
+          required: field.required
         }))
 
         await transactionalEntityManager

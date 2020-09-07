@@ -44,6 +44,23 @@ export class Field {
   })
   description: string
 
+  @Column({
+    length: 20,
+    default: 'text'
+  })
+  type: string
+
+  @Column({
+    length: 200,
+    nullable: true
+  })
+  options: string
+
+  @Column({
+    default: false
+  })
+  required: boolean
+
   @CreateDateColumn()
   created_at: Date
 
