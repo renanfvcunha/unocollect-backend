@@ -7,7 +7,7 @@
       "target": "es5",
       "module": "commonjs",
       "moduleResolution": "node",
-      "outDir": "./build",
+      "outDir": "../backend_build",
       "removeComments": true,
       "emitDecoratorMetadata": true,
       "experimentalDecorators": true,

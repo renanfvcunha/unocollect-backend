@@ -29,7 +29,7 @@ interface ValuesWithId {
 class FillController {
   public async index (req: Request, res: Response): Promise<Response> {
     try {
-      const forms = await getRepository(Form)
+      const formsQuery = await getRepository(Form)
         .createQueryBuilder('form')
         .select([
           'form.id',
@@ -37,17 +37,30 @@ class FillController {
           'form.description',
           'field.id',
           'field.name',
-          'field.description'
+          'field.description',
+          'field.type',
+          'field.options',
+          'field.required'
         ])
         .leftJoin('form.fields', 'field')
         .where('form.status = 1')
+        .orderBy('form.id', 'DESC')
         .getMany()
+
+      const forms = formsQuery.map(form => ({
+        ...form,
+        fields: form.fields.map(field => ({
+          ...field,
+          options: field.options !== '' ? JSON.parse(field.options) : []
+        }))
+      }))
 
       return res.json(forms)
     } catch (err) {
       return res.status(500).json({
-        msg:
-          'Erro interno do servidor. Por favor, tente novamente ou contate o suporte.'
+        err
+        /* msg:
+          'Erro interno do servidor. Por favor, tente novamente ou contate o suporte.' */
       })
     }
   }

@@ -14,10 +14,12 @@ import FillController from './app/controllers/FillController'
 import ValueController from './app/controllers/ValueController'
 import UserFormController from './app/controllers/UserFormController'
 import ImageController from './app/controllers/ImageController'
+import checkToken from './app/utils/checkToken'
 
 const routes = Router()
 const imgs = multer(uploadImgs)
 
+routes.get('/checktoken', checkToken)
 routes.post('/session', SessionController.store)
 
 // Middleware de autenticação. Todas as rotas abaixo irão exigir autenticação do usuário
