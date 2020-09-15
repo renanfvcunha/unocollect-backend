@@ -58,9 +58,8 @@ class FillController {
       return res.json(forms)
     } catch (err) {
       return res.status(500).json({
-        err
-        /* msg:
-          'Erro interno do servidor. Por favor, tente novamente ou contate o suporte.' */
+        msg:
+          'Erro interno do servidor. Por favor, tente novamente ou contate o suporte.'
       })
     }
   }

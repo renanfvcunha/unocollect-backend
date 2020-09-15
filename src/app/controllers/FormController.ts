@@ -13,6 +13,7 @@ interface IForm {
 }
 
 interface Fields {
+  id?: number
   form?: number
   name?: string
   description?: string
@@ -142,7 +143,7 @@ class FormController {
           name: field.name,
           description: field.description,
           type: field.type,
-          options: field.options,
+          options: JSON.stringify(field.options),
           required: field.required
         }))
 
@@ -167,7 +168,7 @@ class FormController {
 
     try {
       // Buscando formulários com campos e valores
-      const form = await getRepository(Form)
+      const formQuery = await getRepository(Form)
         .createQueryBuilder('form')
         .select([
           'form.id',
@@ -178,7 +179,9 @@ class FormController {
           'field.id',
           'field.name',
           'field.description',
-          'field.created_at'
+          'field.type',
+          'field.options',
+          'field.required'
         ])
         .leftJoin('form.category', 'category')
         .leftJoin('form.fields', 'field')
@@ -186,11 +189,18 @@ class FormController {
         .getOne()
 
       // Verificando se houve retorno
-      if (!form) {
+      if (!formQuery) {
         return res
           .status(404)
           .json({ msg: 'Formulário não encontrado na base de dados.' })
       }
+
+      const fields = formQuery.fields.map(field => ({
+        ...field,
+        options: field.options ? JSON.parse(field.options) : ['']
+      }))
+
+      const form = { ...formQuery, fields }
 
       return res.json(form)
     } catch (err) {
@@ -202,9 +212,8 @@ class FormController {
 
   public async update (req: Request, res: Response) {
     const { id } = req.params
-    const { status } = req.body
-    // const { title, description, status, category }: FormInterface = req.body
-    // const fields: Fields[] = req.body.fields
+    const { title, description, category, status }: IForm = req.body
+    const fields: Fields[] = req.body.fields
 
     // Verificando se o formulário existe
     const formToEdit = await getRepository(Form).findOne(id)
@@ -213,9 +222,9 @@ class FormController {
       return res.status(404).json({ msg: 'Formulário não encontrado!' })
     }
 
-    if (status) {
-      try {
-        const form = new Form()
+    try {
+      const form = new Form()
+      if (status) {
         form.status = status
 
         // Editando Formulário
@@ -233,9 +242,77 @@ class FormController {
         } else {
           return res.json({ msg: 'Formulário desativado com sucesso!' })
         }
-      } catch (err) {
-        return res.status(500).json(err)
+      } else {
+        form.title = title
+        form.description = description
+        form.category = category
+
+        const fieldsIdsQuery = await getRepository(Field)
+          .createQueryBuilder('field')
+          .select('field.id')
+          .innerJoin('field.form', 'form')
+          .where('form.id = :id', { id })
+          .getMany()
+
+        const bodyIds = fields.map(field => field.id)
+        const fieldsIds = fieldsIdsQuery.map(field => field.id)
+
+        /**
+         * Comparando ids enviados no corpo da requisição com ids existentes
+         * no banco para saber se algum será deletado.
+         */
+        const idsToRemove: number[] = []
+        for (let i = 0; i < fieldsIds.length; i++) {
+          if (bodyIds.indexOf(fieldsIds[i]) === -1) {
+            idsToRemove.push(fieldsIds[i])
+          }
+        }
+
+        await getManager().transaction(async transactionalEntityManager => {
+          // Atualizando formulário
+          await transactionalEntityManager.getRepository(Form).update(id, form)
+
+          /**
+           * Verificando se há id no campo. Se houver, será uma atualização.
+           * Senão, será uma adição
+           */
+          fields.map(async fld => {
+            if (fld.id) {
+              const field = new Field()
+              field.name = fld.name
+              field.description = fld.description
+              field.type = fld.type
+              field.options = JSON.stringify(fld.options)
+              field.required = fld.required
+
+              await transactionalEntityManager
+                .getRepository(Field)
+                .update(fld.id, field)
+            } else {
+              const field = new Field()
+              field.name = fld.name
+              field.description = fld.description
+              field.type = fld.type
+              field.options = JSON.stringify(fld.options)
+              field.required = fld.required
+              field.form = Number(id)
+
+              await transactionalEntityManager.getRepository(Field).save(field)
+            }
+          })
+
+          // Removendo campos verificados anteriormente
+          idsToRemove.map(async id => {
+            await transactionalEntityManager.getRepository(Field).delete(id)
+          })
+        })
+
+        return res.json({ msg: 'Formulário editado com sucesso!' })
       }
+    } catch (err) {
+      return res.status(500).json({
+        msg: 'Erro interno do servidor. Tente novamente ou contate o suporte. '
+      })
     }
   }
 
