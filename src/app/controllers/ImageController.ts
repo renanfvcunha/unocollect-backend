@@ -18,7 +18,7 @@ class ImageController {
         ])
         .innerJoin('userForm.user', 'user')
         .where('userForm.form = :formId', { formId })
-        .orderBy('userForm.user')
+        .orderBy('userForm.id', 'DESC')
         .getRawMany()
 
       const usersImages = usersQuery.map(userForm => ({

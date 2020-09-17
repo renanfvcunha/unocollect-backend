@@ -146,16 +146,25 @@ class FillController {
 
   public async show (req: Request, res: Response) {
     const { id } = req.params
+    const { per_page, page } = req.query
 
     try {
+      const usersFormsCount = await getRepository(UserForm)
+        .createQueryBuilder('userForm')
+        .select(['userForm.id'])
+        .where('userForm.form = :id', { id })
+        .getCount()
+
       const usersFormsQuery = await getRepository(UserForm)
         .createQueryBuilder('userForm')
         .select(['userForm.id'])
         .where('userForm.form = :id', { id })
-        .orderBy('userForm.id')
-        .getRawMany()
+        .limit(Number(per_page))
+        .offset((Number(page) - 1) * Number(per_page))
+        .orderBy('userForm.id', 'DESC')
+        .getMany()
 
-      const usersForms = usersFormsQuery.map(userForm => userForm.userForm_id)
+      const usersForms = usersFormsQuery.map(userForm => userForm.id)
 
       const fills = []
       for (let i = 0; i < usersForms.length; i++) {
@@ -182,6 +191,7 @@ class FillController {
         fillsQuery.map(field => ({
           values: field.fieldsUserValue.map(fieldUserValue =>
             fillsParsed.push({
+              id: usersForms[i],
               [field.id]: fieldUserValue.value,
               created_at: fieldUserValue.created_at,
               created_by: fieldUserValue.userForm
@@ -203,7 +213,11 @@ class FillController {
         fills.push(fillAssigned)
       }
 
-      return res.json(fills)
+      return res.json({
+        fills,
+        page: Number(page),
+        totalCount: usersFormsCount
+      })
     } catch (err) {
       return res.status(500).json({
         msg: 'Erro interno do servidor. Tente novamente ou contate o suporte.'
