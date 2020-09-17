@@ -1,12 +1,21 @@
 class Utils {
   /**
    * Função utilizada para converter datas
-   * em UTC para datas locais
+   * para o padrão brasileiro
    */
-  public utcToLocalTime (date: Date) {
+  public parseDate (date: Date) {
+    function pStart (num: number): string {
+      return num.toString().padStart(2, '0')
+    }
+
     const d = new Date(date)
-    const newDate = new Date(d.setHours(d.getHours() - 3))
-    return newDate
+    const dateParsed = `${pStart(d.getDate())}/${pStart(
+      d.getMonth() + 1
+    )}/${d.getFullYear().toString()} ${pStart(d.getHours())}:${pStart(
+      d.getMinutes()
+    )}:${pStart(d.getSeconds())}`
+
+    return dateParsed
   }
 }
 

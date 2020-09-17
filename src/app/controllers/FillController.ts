@@ -5,6 +5,7 @@ import { UserForm } from '../models/UserForm'
 import { Form } from '../models/Form'
 import { ImageUserForm } from '../models/ImageUserForm'
 import { Field } from '../models/Field'
+import Utils from '../utils/index'
 
 interface UserRequest extends Request {
   userId: number
@@ -222,6 +223,82 @@ class FillController {
       return res.status(500).json({
         msg: 'Erro interno do servidor. Tente novamente ou contate o suporte.'
       })
+    }
+  }
+
+  public async export (req: Request, res: Response): Promise<Response> {
+    const { id } = req.params
+
+    try {
+      const usersFormsQuery = await getRepository(UserForm)
+        .createQueryBuilder('userForm')
+        .select(['userForm.id'])
+        .where('userForm.form = :id', { id })
+        .orderBy('userForm.id', 'ASC')
+        .getMany()
+
+      const usersForms = usersFormsQuery.map(userForm => userForm.id)
+
+      const fills = []
+
+      const fieldsQuery = await getRepository(Field)
+        .createQueryBuilder('field')
+        .select(['field.name'])
+        .where('field.form = :id', { id })
+        .getMany()
+
+      const fields = fieldsQuery.map(field => field.name)
+
+      fills.push([...fields, 'Criado Por', 'Criado Em'])
+
+      for (let i = 0; i < usersForms.length; i++) {
+        const fillsQuery = await getRepository(Field)
+          .createQueryBuilder('field')
+          .select([
+            'field.id',
+            'field.name',
+            'fieldsUserValue.id',
+            'fieldsUserValue.value',
+            'fieldsUserValue.created_at',
+            'userForm.id',
+            'user.id',
+            'user.name'
+          ])
+          .leftJoin('field.fieldsUserValue', 'fieldsUserValue')
+          .leftJoin('fieldsUserValue.userForm', 'userForm')
+          .leftJoin('userForm.user', 'user')
+          .where('field.form = :id', { id })
+          .andWhere('userForm.id = :userForm', { userForm: usersForms[i] })
+          .getMany()
+
+        const fillsParsed = []
+        fillsQuery.map(field => ({
+          values: field.fieldsUserValue.map(fieldUserValue =>
+            fillsParsed.push({
+              [field.id]: fieldUserValue.value,
+              created_by: fieldUserValue.userForm,
+              created_at: Utils.parseDate(fieldUserValue.created_at)
+            })
+          )
+        }))
+
+        const fillsParsedWithName = fillsParsed.map(newFill => ({
+          ...newFill,
+          created_by: newFill.created_by.user.name
+        }))
+
+        let fillAssigned = {}
+        for (let i = 0; i < fillsParsedWithName.length; i++) {
+          const aux = Object.assign(fillAssigned, fillsParsedWithName[i])
+          fillAssigned = aux
+        }
+
+        fills.push(Object.values(fillAssigned))
+      }
+
+      return res.json(fills)
+    } catch (err) {
+      return res.status(500).json(err)
     }
   }
 }
