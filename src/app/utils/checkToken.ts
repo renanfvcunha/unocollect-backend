@@ -36,6 +36,6 @@ export default async (
   } catch (err) {
     return res
       .status(401)
-      .json({ msg: 'Seu Token Expirou! Faça Login Novamente.' })
+      .json({ msg: 'Token Inválido ou Expirado. Faça Login Novamente.' })
   }
 }
