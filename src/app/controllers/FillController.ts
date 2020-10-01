@@ -1,11 +1,13 @@
 import { Request, Response } from 'express'
 import { getRepository, getManager } from 'typeorm'
+
 import { FieldUserValue } from '../models/FieldUserValue'
 import { UserForm } from '../models/UserForm'
 import { Form } from '../models/Form'
 import { ImageUserForm } from '../models/ImageUserForm'
 import { Field } from '../models/Field'
 import Utils from '../utils/index'
+import resizeImage from '../../config/resizeImg'
 
 interface UserRequest extends Request {
   userId: number
@@ -77,6 +79,7 @@ class FillController {
     const filenames: string[] = []
     if (files) {
       for (let i = 0; i < files.length; i++) {
+        resizeImage(files[i], 1920)
         filenames.push(files[i].filename)
       }
     }

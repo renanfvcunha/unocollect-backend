@@ -5,10 +5,10 @@ function pStart (num: number): string {
   return num.toString().padStart(2, '0')
 }
 
-export default {
+const uploadImgs = multer({
   storage: multer.diskStorage({
     destination: path.resolve(__dirname, '..', 'uploads', 'formImages'),
-    filename (request, file, callback) {
+    filename (req, file, cb) {
       const ext = file.mimetype.split('/')[1]
 
       const date = new Date()
@@ -19,7 +19,20 @@ export default {
         date.getMinutes()
       )}${pStart(date.getSeconds())}${date.getMilliseconds().toString()}.${ext}`
 
-      callback(null, fileName)
+      cb(null, fileName)
     }
-  })
-}
+  }),
+  fileFilter: (req, file, cb) => {
+    const isAccepted = ['image/png', 'image/jpg', 'image/jpeg'].find(
+      acceptedFormat => acceptedFormat === file.mimetype
+    )
+
+    if (!isAccepted) {
+      return cb(null, false)
+    }
+
+    return cb(null, true)
+  }
+})
+
+export default uploadImgs

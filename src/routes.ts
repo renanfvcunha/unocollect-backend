@@ -1,5 +1,4 @@
 import { Router } from 'express'
-import multer from 'multer'
 import uploadImgs from './config/uploadImgs'
 
 import UserValidator from './app/validators/UserValidator'
@@ -17,7 +16,6 @@ import ImageController from './app/controllers/ImageController'
 import checkToken from './app/utils/checkToken'
 
 const routes = Router()
-const imgs = multer(uploadImgs)
 
 routes.get('/checktoken', checkToken)
 routes.post('/session', SessionController.store)
@@ -26,7 +24,7 @@ routes.post('/session', SessionController.store)
 routes.use(authMiddleware)
 
 routes.get('/fills', FillController.index)
-routes.post('/fills/:id', imgs.array('image'), FillController.store)
+routes.post('/fills/:id', uploadImgs.array('image'), FillController.store)
 
 routes.get('/forms/:id', FormController.show)
 
