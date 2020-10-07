@@ -1,13 +1,13 @@
 import { Request, Response } from 'express'
 import { getRepository } from 'typeorm'
-import { Category } from '../models/Category'
+import { Group } from '../models/Group'
 
-class CategoryController {
+class GroupController {
   public async index (req: Request, res: Response): Promise<Response> {
     try {
-      const categories = await getRepository(Category).find()
+      const groups = await getRepository(Group).find()
 
-      return res.json(categories)
+      return res.json(groups)
     } catch (err) {
       return res.status(500).json({
         msg: 'Erro interno do servidor. Tente novamente ou contate o suporte.'
@@ -16,13 +16,13 @@ class CategoryController {
   }
 
   public async store (req: Request, res: Response): Promise<Response> {
-    const category = new Category()
-    category.name = req.body.name
+    const group = new Group()
+    group.name = req.body.name
 
     try {
-      await getRepository(Category).save(category)
+      await getRepository(Group).save(group)
 
-      return res.json({ msg: 'Categoria adicionada com sucesso!' })
+      return res.json({ msg: 'Grupo adicionado com sucesso!' })
     } catch (err) {
       return res.status(500).json({
         msg: 'Erro interno do servidor. Tente novamente ou contate o suporte. '
@@ -31,4 +31,4 @@ class CategoryController {
   }
 }
 
-export default new CategoryController()
+export default new GroupController()

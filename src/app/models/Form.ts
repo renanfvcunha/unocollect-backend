@@ -7,10 +7,13 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
-  JoinColumn
+  JoinColumn,
+  ManyToMany,
+  JoinTable
 } from 'typeorm'
 import { Category } from './Category'
 import { Field } from './Field'
+import { Group } from './Group'
 import { UserForm } from './UserForm'
 
 @Entity({
@@ -63,4 +66,24 @@ export class Form {
     userForm => userForm.form
   )
   userForm: UserForm[]
+
+  @ManyToMany(
+    type => Group,
+    group => group.forms,
+    {
+      cascade: true
+    }
+  )
+  @JoinTable({
+    name: 'forms_groups',
+    joinColumn: {
+      name: 'form_id',
+      referencedColumnName: 'id'
+    },
+    inverseJoinColumn: {
+      name: 'group_id',
+      referencedColumnName: 'id'
+    }
+  })
+  groups: Group[]
 }

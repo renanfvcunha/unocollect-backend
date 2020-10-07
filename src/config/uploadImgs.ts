@@ -9,7 +9,7 @@ const uploadImgs = multer({
   storage: multer.diskStorage({
     destination: path.resolve(__dirname, '..', 'uploads', 'formImages'),
     filename (req, file, cb) {
-      const ext = file.mimetype.split('/')[1]
+      const ext = file.originalname.split('.').pop()
 
       const date = new Date()
 

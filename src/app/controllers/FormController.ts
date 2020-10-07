@@ -10,6 +10,7 @@ interface IForm {
   created_at?: Date
   category?: number
   status?: number
+  groups?: number[]
 }
 
 interface Fields {
@@ -105,14 +106,14 @@ class FormController {
   }
 
   public async store (req: Request, res: Response): Promise<Response> {
-    const { title, description, category }: IForm = req.body
+    const { title, description, category, groups }: IForm = req.body
     const fields: Fields[] = req.body.fields
 
     // Verificando se já existe formulário com o mesmo título
-    const form = await getRepository(Form).find({
+    const forms = await getRepository(Form).find({
       where: { title }
     })
-    if (form.length !== 0) {
+    if (forms.length !== 0) {
       return res
         .status(400)
         .json({ msg: 'Já existe um formulário com este título.' })
@@ -120,39 +121,36 @@ class FormController {
 
     try {
       await getManager().transaction(async transactionalEntityManager => {
-        // Criando o nome e descrição do formulário
-        const result = await transactionalEntityManager
-          .createQueryBuilder()
-          .insert()
-          .into(Form)
-          .values([
-            {
-              title,
-              description,
-              category
-            }
-          ])
-          .execute()
-
-        // Capturando id inserido no formulário
-        const formId: number = result.identifiers[0].id
-
-        // Criando os campos do formulário
-        const fieldsWithId = fields.map((field: Fields) => ({
-          form: formId,
-          name: field.name,
-          description: field.description,
-          type: field.type,
-          options: JSON.stringify(field.options),
-          required: field.required
+        // Parseando id dos grupos
+        const formGroups = groups.map(id => ({
+          id
         }))
 
+        // Criando o nome e descrição do formulário
+        const form = new Form()
+        form.title = title
+        form.description = description
+        form.category = category
+        form.groups = formGroups
+
         await transactionalEntityManager
-          .createQueryBuilder()
-          .insert()
-          .into(Field)
-          .values(fieldsWithId)
-          .execute()
+          .getRepository(Form)
+          .save(form)
+          .then(form => {
+            // Criando os campos do formulário
+            fields.map(async (fld: Fields) => {
+              const field = new Field()
+
+              field.form = form.id
+              field.name = fld.name
+              field.description = fld.description
+              field.type = fld.type
+              field.options = fld.options
+              field.required = fld.required
+
+              await transactionalEntityManager.getRepository(Field).save(field)
+            })
+          })
       })
 
       return res.json({ msg: 'Formulário criado com sucesso!' })

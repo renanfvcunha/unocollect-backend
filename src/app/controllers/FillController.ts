@@ -6,6 +6,7 @@ import { UserForm } from '../models/UserForm'
 import { Form } from '../models/Form'
 import { ImageUserForm } from '../models/ImageUserForm'
 import { Field } from '../models/Field'
+import { Group } from '../models/Group'
 import Utils from '../utils/index'
 import resizeImage from '../../config/resizeImg'
 
@@ -30,8 +31,15 @@ interface ValuesWithId {
 }
 
 class FillController {
-  public async index (req: Request, res: Response): Promise<Response> {
+  public async index (req: UserRequest, res: Response): Promise<Response> {
     try {
+      const userId = req.userId
+
+      // Buscando total de grupos
+      const groupsQuery = await getRepository(Group).find({ select: ['id'] })
+      const groups = groupsQuery.map(group => group.id)
+
+      // Selecionando formulários por grupos
       const formsQuery = await getRepository(Form)
         .createQueryBuilder('form')
         .select([
@@ -46,10 +54,23 @@ class FillController {
           'field.required'
         ])
         .leftJoin('form.fields', 'field')
+        .innerJoin('form.groups', 'formGroup')
+        .innerJoin('users', 'user')
+        .innerJoin(
+          'user.groups',
+          'userGroup',
+          'form_formGroup.group_id = user_userGroup.group_id'
+        )
         .where('form.status = 1')
+        .andWhere('formGroup.id BETWEEN :start AND :end', {
+          start: groups.shift(),
+          end: groups.pop()
+        })
+        .andWhere('user.id = :userId', { userId })
         .orderBy('form.id', 'DESC')
         .getMany()
 
+      // Parseando Opções dos Campos
       const forms = formsQuery.map(form => ({
         ...form,
         fields: form.fields.map(field => ({

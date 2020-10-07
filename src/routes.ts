@@ -13,6 +13,8 @@ import FillController from './app/controllers/FillController'
 import ValueController from './app/controllers/ValueController'
 import UserFormController from './app/controllers/UserFormController'
 import ImageController from './app/controllers/ImageController'
+import GroupController from './app/controllers/GroupController'
+
 import checkToken from './app/utils/checkToken'
 
 const routes = Router()
@@ -53,5 +55,8 @@ routes.get('/values/:formId', ValueController.show)
 routes.get('/userform/:formId', UserFormController.show)
 
 routes.get('/images/:formId', ImageController.index)
+
+routes.get('/groups', GroupController.index)
+routes.post('/groups', GroupController.store)
 
 export default routes

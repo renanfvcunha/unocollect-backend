@@ -8,6 +8,7 @@ interface IUser {
   name?: string
   username?: string
   admin?: boolean
+  groups?: number[]
   password?: string
   passwordConf?: string
 }
@@ -71,8 +72,13 @@ class UserController {
   }
 
   public async store (req: Request, res: Response): Promise<Response> {
+    const { name, username, admin, groups, password }: IUser = req.body
+
     try {
-      const { name, username, admin, password }: IUser = req.body
+      // Parseando id dos grupos
+      const userGroups = groups.map(id => ({
+        id
+      }))
 
       // Criptografando senha do usuario
       const passwordHash = await bcrypt.hash(password, 8)
@@ -82,6 +88,7 @@ class UserController {
       user.name = name
       user.username = username
       user.admin = admin
+      user.groups = userGroups
       user.password = passwordHash
 
       await getRepository(User).save(user)
