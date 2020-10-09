@@ -16,11 +16,11 @@ import { Field } from './Field'
 })
 export class FieldUserValue {
   @PrimaryGeneratedColumn()
-  id: number
+  id?: number
 
   @ManyToOne(
     type => Field,
-    field => field.fieldsUserValue,
+    field => field.fieldUserValue,
     {
       onUpdate: 'CASCADE',
       onDelete: 'CASCADE',
@@ -30,7 +30,7 @@ export class FieldUserValue {
   @JoinColumn({
     name: 'field_id'
   })
-  field: number
+  field?: Field
 
   @ManyToOne(
     type => UserForm,
@@ -44,19 +44,19 @@ export class FieldUserValue {
   @JoinColumn({
     name: 'user_form_id'
   })
-  userForm: number
+  userForm?: UserForm
 
   @Column('text')
-  value: string
+  value?: string
 
   @Column({
     default: 0
   })
-  updates: number
+  updates?: number
 
   @CreateDateColumn()
-  created_at: Date
+  created_at?: Date
 
   @UpdateDateColumn()
-  updated_at: Date
+  updated_at?: Date
 }

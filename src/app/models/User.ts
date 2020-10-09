@@ -17,39 +17,39 @@ import { UserForm } from './UserForm'
 })
 export class User {
   @PrimaryGeneratedColumn()
-  id: number
+  id?: number
 
   @Column({
     length: 100
   })
-  name: string
+  name?: string
 
   @Column({
     length: 50
   })
-  username: string
+  username?: string
 
   @Column({
     length: 100
   })
-  password: string
+  password?: string
 
   @Column({
     default: false
   })
-  admin: boolean
+  admin?: boolean
 
   @CreateDateColumn()
-  created_at: Date
+  created_at?: Date
 
   @UpdateDateColumn()
-  updated_at: Date
+  updated_at?: Date
 
   @OneToMany(
     type => UserForm,
     userForm => userForm.form
   )
-  userForm: UserForm[]
+  userForm?: UserForm[]
 
   @ManyToMany(
     type => Group,
@@ -69,5 +69,5 @@ export class User {
       referencedColumnName: 'id'
     }
   })
-  groups: Group[]
+  groups?: Group[]
 }

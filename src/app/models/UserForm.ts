@@ -19,7 +19,7 @@ import { FieldUserValue } from './FieldUserValue'
 })
 export class UserForm {
   @PrimaryGeneratedColumn()
-  id: number
+  id?: number
 
   @ManyToOne(
     type => User,
@@ -33,7 +33,7 @@ export class UserForm {
   @JoinColumn({
     name: 'user_id'
   })
-  user: number
+  user?: User
 
   @ManyToOne(
     type => Form,
@@ -47,29 +47,31 @@ export class UserForm {
   @JoinColumn({
     name: 'form_id'
   })
-  form: number
+  form?: Form
 
   @Column({ type: 'decimal', precision: 10, scale: 8 })
-  latitude: number
+  latitude?: number
 
   @Column({ type: 'decimal', precision: 11, scale: 8 })
-  longitude: number
+  longitude?: number
 
   @CreateDateColumn()
-  created_at: string
+  created_at?: string
 
   @UpdateDateColumn()
-  updated_at: string
+  updated_at?: string
 
   @OneToMany(
     type => ImageUserForm,
-    imageUserForm => imageUserForm.userForm
+    imageUserForm => imageUserForm.userForm,
+    { cascade: ['insert'] }
   )
-  imageUserForm: ImageUserForm[]
+  imageUserForm?: ImageUserForm[]
 
   @OneToMany(
     type => FieldUserValue,
-    fieldUserValue => fieldUserValue.userForm
+    fieldUserValue => fieldUserValue.userForm,
+    { cascade: ['insert'] }
   )
-  fieldUserValue: FieldUserValue[]
+  fieldUserValue?: FieldUserValue[]
 }

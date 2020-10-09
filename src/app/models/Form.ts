@@ -21,7 +21,7 @@ import { UserForm } from './UserForm'
 })
 export class Form {
   @PrimaryGeneratedColumn()
-  id: number
+  id?: number
 
   @ManyToOne(
     type => Category,
@@ -34,38 +34,39 @@ export class Form {
   @JoinColumn({
     name: 'category_id'
   })
-  category: number
+  category?: Category
 
   @Column({
     length: 100
   })
-  title: string
+  title?: string
 
   @Column('text')
-  description: string
+  description?: string
 
   @Column('smallint', {
     default: 1
   })
-  status: number
+  status?: number
 
   @CreateDateColumn()
-  created_at: Date
+  created_at?: Date
 
   @UpdateDateColumn()
-  updated_at: Date
+  updated_at?: Date
 
   @OneToMany(
     type => Field,
-    field => field.form
+    field => field.form,
+    { cascade: ['insert'] }
   )
-  fields: Field[]
+  fields?: Field[]
 
   @OneToMany(
     type => UserForm,
     userForm => userForm.form
   )
-  userForm: UserForm[]
+  userForm?: UserForm[]
 
   @ManyToMany(
     type => Group,
@@ -85,5 +86,5 @@ export class Form {
       referencedColumnName: 'id'
     }
   })
-  groups: Group[]
+  groups?: Group[]
 }

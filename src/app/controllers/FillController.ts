@@ -1,10 +1,9 @@
 import { Request, Response } from 'express'
-import { getRepository, getManager } from 'typeorm'
+import { getRepository } from 'typeorm'
 
 import { FieldUserValue } from '../models/FieldUserValue'
 import { UserForm } from '../models/UserForm'
 import { Form } from '../models/Form'
-import { ImageUserForm } from '../models/ImageUserForm'
 import { Field } from '../models/Field'
 import { Group } from '../models/Group'
 import Utils from '../utils/index'
@@ -19,7 +18,7 @@ interface Location {
   longitude: number
 }
 
-interface Values {
+interface Value {
   fieldId: number
   value: string
 }
@@ -94,7 +93,6 @@ class FillController {
     const { latitude, longitude }: Location = req.body
     const values: string[] = req.body.values
     const date: string = req.body.date
-    const valuesParsed = values.map(value => JSON.parse(value))
     const files = req.files
 
     const filenames: string[] = []
@@ -105,67 +103,37 @@ class FillController {
       }
     }
 
+    // Parseando campo dos valores
+    const valuesParsed: FieldUserValue[] = values
+      .map(value => JSON.parse(value))
+      .map((value: Value) => ({
+        field: { id: value.fieldId },
+        value: value.value
+      }))
+
+    // Parseando nomes da imagens
+    const imagesParsed = filenames.map(name => ({
+      name
+    }))
+
     try {
-      await getManager().transaction(async transactionalEntityManager => {
-        // Inserindo dados na tabela pivô de usuários e formulários
-        const result = await transactionalEntityManager
-          .createQueryBuilder()
-          .insert()
-          .into(UserForm)
-          .values([
-            {
-              latitude: Number(latitude),
-              longitude: Number(longitude),
-              user: userId,
-              form: Number(id),
-              created_at: date,
-              updated_at: date
-            }
-          ])
-          .execute()
+      // Inserindo dados
+      const userForm = new UserForm()
+      userForm.latitude = Number(latitude)
+      userForm.longitude = Number(longitude)
+      userForm.user = { id: userId }
+      userForm.form = { id: Number(id) }
+      userForm.created_at = date
+      userForm.updated_at = date
+      userForm.fieldUserValue = valuesParsed
+      userForm.imageUserForm = imagesParsed
 
-        /**
-         * Capturando id inserido na tabela pivô
-         */
-        const userFormId: number = result.identifiers[0].id
-
-        // Inserindo as respostas na tabela de valores
-        const valuesWithId = valuesParsed.map((value: ValuesWithId) => ({
-          userForm: userFormId,
-          field: value.fieldId,
-          value: value.value
-        }))
-
-        await transactionalEntityManager
-          .createQueryBuilder()
-          .insert()
-          .into(FieldUserValue)
-          .values(valuesWithId)
-          .execute()
-
-        /**
-         * Inserindo nomes das imagens na tabela de imagens
-         */
-        if (filenames.length !== 0) {
-          const imagesWithId = filenames.map((filename: string) => ({
-            userForm: userFormId,
-            name: filename
-          }))
-
-          await transactionalEntityManager
-            .createQueryBuilder()
-            .insert()
-            .into(ImageUserForm)
-            .values(imagesWithId)
-            .execute()
-        }
-      })
-
+      await getRepository(UserForm).save(userForm)
       return res.json({ msg: 'Formulário preenchido com sucesso!' })
     } catch (err) {
-      return res
-        .status(500)
-        .json({ msg: 'Houve um erro ao preencher o formulário.' })
+      return res.status(500).json({
+        msg: 'Erro interno do servidor. Tente novamente ou contate o suporte.'
+      })
     }
   }
 
@@ -214,7 +182,7 @@ class FillController {
 
         const fillsParsed = []
         fillsQuery.map(field => ({
-          values: field.fieldsUserValue.map(fieldUserValue =>
+          values: field.fieldUserValue.map(fieldUserValue =>
             fillsParsed.push({
               id: usersForms[i],
               [field.id]: fieldUserValue.value,
@@ -297,7 +265,7 @@ class FillController {
 
         const fillsParsed = []
         fillsQuery.map(field => ({
-          values: field.fieldsUserValue.map(fieldUserValue =>
+          values: field.fieldUserValue.map(fieldUserValue =>
             fillsParsed.push({
               [field.id]: fieldUserValue.value,
               created_by: fieldUserValue.userForm,

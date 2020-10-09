@@ -17,7 +17,7 @@ import { FieldUserValue } from './FieldUserValue'
 })
 export class Field {
   @PrimaryGeneratedColumn()
-  id: number
+  id?: number
 
   @ManyToOne(
     type => Form,
@@ -31,45 +31,45 @@ export class Field {
   @JoinColumn({
     name: 'form_id'
   })
-  form: number
+  form?: Form
 
   @Column({
     length: 100
   })
-  name: string
+  name?: string
 
   @Column({
     length: 200,
     nullable: true
   })
-  description: string
+  description?: string
 
   @Column({
     length: 20,
     default: 'text'
   })
-  type: string
+  type?: string
 
   @Column({
     length: 200,
     nullable: true
   })
-  options: string
+  options?: string
 
   @Column({
     default: false
   })
-  required: boolean
+  required?: boolean
 
   @CreateDateColumn()
-  created_at: Date
+  created_at?: Date
 
   @UpdateDateColumn()
-  updated_at: Date
+  updated_at?: Date
 
   @OneToMany(
     type => FieldUserValue,
     fieldUserValue => fieldUserValue.field
   )
-  fieldsUserValue: FieldUserValue[]
+  fieldUserValue?: FieldUserValue[]
 }

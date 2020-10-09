@@ -14,22 +14,22 @@ import { Form } from './Form'
 })
 export class Category {
   @PrimaryGeneratedColumn()
-  id: number
+  id?: number
 
   @Column({
     length: 50
   })
-  name: string
+  name?: string
 
   @CreateDateColumn()
-  created_at: Date
+  created_at?: Date
 
   @UpdateDateColumn()
-  updated_at: Date
+  updated_at?: Date
 
   @OneToMany(
     type => Form,
     form => form.category
   )
-  form: Form[]
+  form?: Form[]
 }

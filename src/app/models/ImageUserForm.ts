@@ -15,7 +15,7 @@ import { UserForm } from './UserForm'
 })
 export class ImageUserForm {
   @PrimaryGeneratedColumn()
-  id: number
+  id?: number
 
   @ManyToOne(
     type => UserForm,
@@ -29,16 +29,16 @@ export class ImageUserForm {
   @JoinColumn({
     name: 'user_form_id'
   })
-  userForm: number
+  userForm?: UserForm
 
   @Column({
     length: 30
   })
-  name: string
+  name?: string
 
   @CreateDateColumn()
-  created_at: Date
+  created_at?: Date
 
   @UpdateDateColumn()
-  updated_at: Date
+  updated_at?: Date
 }
