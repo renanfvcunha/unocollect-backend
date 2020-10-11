@@ -58,5 +58,7 @@ routes.get('/images/:formId', ImageController.index)
 
 routes.get('/groups', GroupController.index)
 routes.post('/groups', GroupController.store)
+routes.put('/groups/:id', GroupController.update)
+routes.delete('/groups/:id', GroupController.destroy)
 
 export default routes

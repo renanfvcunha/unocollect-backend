@@ -29,6 +29,36 @@ class GroupController {
       })
     }
   }
+
+  public async update (req: Request, res: Response): Promise<Response> {
+    const { id } = req.params
+    const group = new Group()
+    group.name = req.body.name
+
+    try {
+      await getRepository(Group).update(id, group)
+
+      return res.json({ msg: 'Grupo editado com sucesso!' })
+    } catch (err) {
+      return res.status(500).json({
+        msg: 'Erro interno do servidor. Tente novamente ou contate o suporte. '
+      })
+    }
+  }
+
+  public async destroy (req: Request, res: Response): Promise<Response> {
+    const { id } = req.params
+
+    try {
+      await getRepository(Group).delete(id)
+
+      return res.json({ msg: 'Grupo removido com sucesso!' })
+    } catch (err) {
+      return res.status(500).json({
+        msg: 'Erro interno do servidor. Tente novamente ou contate o suporte.'
+      })
+    }
+  }
 }
 
 export default new GroupController()

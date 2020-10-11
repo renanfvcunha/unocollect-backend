@@ -32,7 +32,7 @@ class UserController {
         .getCount()
 
       // Verificando se registro será ou não filtrado
-      let usersQuery = []
+      let usersQuery: User[] = []
       if (search) {
         usersQuery = await getRepository(User)
           .createQueryBuilder('user')
@@ -75,7 +75,8 @@ class UserController {
 
       const users = usersQuery.map(user => ({
         ...user,
-        admin: user.admin ? 'Sim' : 'Não'
+        admin: user.admin ? 'Sim' : 'Não',
+        groups: user.groups.map(group => group.name).join(', ')
       }))
 
       return res.json({ users, total, page: Number(page) })
@@ -181,6 +182,7 @@ class UserController {
       }))
 
       const user = new User()
+      user.id = Number(id)
       user.name = name
       user.username = username
       user.admin = admin
@@ -200,18 +202,12 @@ class UserController {
       }
 
       // Editando usuário
-      const editedUser = await getRepository(User).update(id, user)
-
-      // Verificando se não houve linha alterada
-      if (editedUser.affected === 0) {
-        return res.status(500).json({ msg: 'Erro ao editar usuário.' })
-      }
+      await getRepository(User).save(user)
 
       return res.json({ msg: 'Usuário alterado com sucesso!' })
     } catch (err) {
       return res.status(500).json({
-        err
-        /* msg: 'Erro interno do servidor. Tente novamente ou contate o suporte.' */
+        msg: 'Erro interno do servidor. Tente novamente ou contate o suporte.'
       })
     }
   }
