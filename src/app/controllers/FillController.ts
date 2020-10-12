@@ -249,15 +249,15 @@ class FillController {
           .select([
             'field.id',
             'field.name',
-            'fieldsUserValue.id',
-            'fieldsUserValue.value',
-            'fieldsUserValue.created_at',
+            'fieldUserValue.id',
+            'fieldUserValue.value',
+            'fieldUserValue.created_at',
             'userForm.id',
             'user.id',
             'user.name'
           ])
-          .leftJoin('field.fieldsUserValue', 'fieldsUserValue')
-          .leftJoin('fieldsUserValue.userForm', 'userForm')
+          .leftJoin('field.fieldUserValue', 'fieldUserValue')
+          .leftJoin('fieldUserValue.userForm', 'userForm')
           .leftJoin('userForm.user', 'user')
           .where('field.form = :id', { id })
           .andWhere('userForm.id = :userForm', { userForm: usersForms[i] })
