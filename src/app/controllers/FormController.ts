@@ -134,12 +134,16 @@ class FormController {
       form.description = description
       form.category = { id: category }
       form.groups = formGroups
-      form.fields = fields
+      form.fields = fields.map(field => ({
+        ...field,
+        options: JSON.stringify(field.options)
+      }))
 
       await getRepository(Form).save(form)
 
       return res.json({ msg: 'Formulário criado com sucesso!' })
     } catch (err) {
+      console.log(err)
       return res.status(500).json({
         msg: 'Erro Interno do servidor. Tente novamente ou contate o suporte.'
       })
