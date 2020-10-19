@@ -13,16 +13,6 @@ interface IForm {
   groups?: number[]
 }
 
-interface Fields {
-  id?: number
-  form?: { id: number }
-  name?: string
-  description?: string
-  type?: string
-  options?: string
-  required?: boolean
-}
-
 class FormController {
   public async index (req: Request, res: Response): Promise<Response> {
     const { per_page, page, search } = req.query
@@ -101,9 +91,9 @@ class FormController {
 
       return res.json({ forms, total, page: Number(page) })
     } catch (err) {
+      console.log(err)
       return res.status(500).json({
-        err
-        /* msg: 'Erro Interno do servidor. Tente novamente ou contate o suporte.' */
+        msg: 'Erro Interno do servidor. Tente novamente ou contate o suporte.'
       })
     }
   }
@@ -112,17 +102,17 @@ class FormController {
     const { title, description, category, groups }: IForm = req.body
     const fields: Field[] = req.body.fields
 
-    // Verificando se já existe formulário com o mesmo título
-    const formQuery = await getRepository(Form).findOne({
-      where: { title }
-    })
-    if (formQuery) {
-      return res
-        .status(400)
-        .json({ msg: 'Já existe um formulário com este título.' })
-    }
-
     try {
+      // Verificando se já existe formulário com o mesmo título
+      const formQuery = await getRepository(Form).findOne({
+        where: { title }
+      })
+      if (formQuery) {
+        return res
+          .status(400)
+          .json({ msg: 'Já existe um formulário com este título.' })
+      }
+
       // Parseando id dos grupos
       const formGroups = groups.map(id => ({
         id
@@ -197,6 +187,7 @@ class FormController {
 
       return res.json(form)
     } catch (err) {
+      console.log(err)
       return res.status(500).json({
         msg: 'Erro interno do servidor. Tente novamente ou contate o suporte.'
       })
@@ -329,6 +320,7 @@ class FormController {
         return res.json({ msg: 'Formulário editado com sucesso!' })
       }
     } catch (err) {
+      console.log(err)
       return res.status(500).json({
         msg: 'Erro interno do servidor. Tente novamente ou contate o suporte. '
       })
@@ -347,6 +339,7 @@ class FormController {
 
       return res.json({ msg: 'Formulário removido com sucesso!' })
     } catch (err) {
+      console.log(err)
       return res.status(500).json({
         msg: 'Erro interno do servidor. Tente novamente ou contate o suporte.'
       })

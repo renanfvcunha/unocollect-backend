@@ -15,6 +15,7 @@ module.exports = {
   },
   plugins: ['@typescript-eslint', 'prettierx'],
   rules: {
+    'prettierx/options': 'warn',
     camelcase: 'off'
   }
 }

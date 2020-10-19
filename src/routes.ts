@@ -41,6 +41,8 @@ routes.delete('/users/:id', UserController.destroy)
 
 routes.get('/categories', CategoryController.index)
 routes.post('/categories', CategoryController.store)
+routes.put('/categories/:id', CategoryController.update)
+routes.delete('/categories/:id', CategoryController.destroy)
 
 routes.get('/forms', FormController.index)
 routes.post('/forms', FormController.store)

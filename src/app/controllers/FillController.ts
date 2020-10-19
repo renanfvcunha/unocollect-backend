@@ -23,12 +23,6 @@ interface Value {
   value: string
 }
 
-interface ValuesWithId {
-  user: number
-  fieldId: number
-  value: string
-}
-
 class FillController {
   public async index (req: UserRequest, res: Response): Promise<Response> {
     try {
@@ -80,6 +74,7 @@ class FillController {
 
       return res.json(forms)
     } catch (err) {
+      console.log(err)
       return res.status(500).json({
         msg:
           'Erro interno do servidor. Por favor, tente novamente ou contate o suporte.'
@@ -131,6 +126,7 @@ class FillController {
       await getRepository(UserForm).save(userForm)
       return res.json({ msg: 'Formulário preenchido com sucesso!' })
     } catch (err) {
+      console.log(err)
       return res.status(500).json({
         msg: 'Erro interno do servidor. Tente novamente ou contate o suporte.'
       })
@@ -212,6 +208,7 @@ class FillController {
         totalCount: usersFormsCount
       })
     } catch (err) {
+      console.log(err)
       return res.status(500).json({
         msg: 'Erro interno do servidor. Tente novamente ou contate o suporte.'
       })
@@ -290,6 +287,7 @@ class FillController {
 
       return res.json(fills)
     } catch (err) {
+      console.log(err)
       return res.status(500).json(err)
     }
   }

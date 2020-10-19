@@ -9,6 +9,7 @@ class GroupController {
 
       return res.json(groups)
     } catch (err) {
+      console.log(err)
       return res.status(500).json({
         msg: 'Erro interno do servidor. Tente novamente ou contate o suporte.'
       })
@@ -24,6 +25,7 @@ class GroupController {
 
       return res.json({ msg: 'Grupo adicionado com sucesso!' })
     } catch (err) {
+      console.log(err)
       return res.status(500).json({
         msg: 'Erro interno do servidor. Tente novamente ou contate o suporte. '
       })
@@ -40,6 +42,7 @@ class GroupController {
 
       return res.json({ msg: 'Grupo editado com sucesso!' })
     } catch (err) {
+      console.log(err)
       return res.status(500).json({
         msg: 'Erro interno do servidor. Tente novamente ou contate o suporte. '
       })
@@ -54,6 +57,7 @@ class GroupController {
 
       return res.json({ msg: 'Grupo removido com sucesso!' })
     } catch (err) {
+      console.log(err)
       return res.status(500).json({
         msg: 'Erro interno do servidor. Tente novamente ou contate o suporte.'
       })

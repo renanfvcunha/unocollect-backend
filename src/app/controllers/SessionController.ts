@@ -43,6 +43,7 @@ class SessionController {
         })
       })
     } catch (err) {
+      console.log(err)
       return res.status(500).json({
         msg:
           'Erro interno do servidor. Por favor, tente novamente ou contate o suporte.'

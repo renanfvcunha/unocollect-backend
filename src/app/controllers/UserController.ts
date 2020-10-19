@@ -81,9 +81,9 @@ class UserController {
 
       return res.json({ users, total, page: Number(page) })
     } catch (err) {
+      console.log(err)
       return res.status(500).json({
-        err
-        /* msg: 'Erro interno do servidor. Tente novamente ou contate o suporte.' */
+        msg: 'Erro interno do servidor. Tente novamente ou contate o suporte.'
       })
     }
   }
@@ -123,6 +123,7 @@ class UserController {
 
       return res.json({ msg: 'Usuário Cadastrado Com Sucesso!' })
     } catch (err) {
+      console.log(err)
       return res.status(500).json({
         msg: 'Erro interno do servidor. Tente novamente ou contate o suporte.'
       })
@@ -150,6 +151,7 @@ class UserController {
         groups: user.groups.map(group => group.id)
       })
     } catch (err) {
+      console.log(err)
       return res.status(500).json({
         msg: 'Erro interno do servidor. Tente novamente ou contate o suporte.'
       })
@@ -206,6 +208,7 @@ class UserController {
 
       return res.json({ msg: 'Usuário alterado com sucesso!' })
     } catch (err) {
+      console.log(err)
       return res.status(500).json({
         msg: 'Erro interno do servidor. Tente novamente ou contate o suporte.'
       })
@@ -224,6 +227,7 @@ class UserController {
 
       return res.json({ msg: 'Usuário removido com sucesso!' })
     } catch (err) {
+      console.log(err)
       return res.status(500).json({
         msg: 'Erro interno do servidor. Tente novamente ou contate o suporte.'
       })
