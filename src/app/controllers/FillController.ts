@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { getRepository } from 'typeorm'
+import { getRepository, Between } from 'typeorm'
 
 import { FieldUserValue } from '../models/FieldUserValue'
 import { UserForm } from '../models/UserForm'
@@ -288,7 +288,42 @@ class FillController {
       return res.json(fills)
     } catch (err) {
       console.log(err)
-      return res.status(500).json(err)
+      return res.status(500).json({
+        msg: 'Erro interno do servidor. Tente novamente ou contate o suporte.'
+      })
+    }
+  }
+
+  public async fillsPerDay (req: Request, res: Response): Promise<Response> {
+    try {
+      const dates: string[] = []
+      const parsedDates: string[] = []
+
+      for (let i = 4; i >= 0; i--) {
+        const d = new Date()
+        d.setDate(d.getDate() - i)
+        const date = d.toLocaleString().split(' ')[0]
+        dates.push(date)
+        const parsedDate = Utils.parseDate(d).split(' ')[0]
+        parsedDates.push(parsedDate)
+      }
+
+      const fills: number[] = []
+      for (let i = 0; i < dates.length; i++) {
+        const fillsQuery = await getRepository(UserForm).count({
+          where: {
+            created_at: Between(`${dates[i]} 00:00:00`, `${dates[i]} 23:59:59`)
+          }
+        })
+        fills.push(fillsQuery)
+      }
+
+      return res.json({ fills, dates: parsedDates })
+    } catch (err) {
+      console.log(err)
+      return res.status(500).json({
+        msg: 'Erro interno do servidor. Tente novamente ou contate o suporte.'
+      })
     }
   }
 }

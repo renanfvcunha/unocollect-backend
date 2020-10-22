@@ -51,6 +51,7 @@ routes.delete('/forms/:id', FormController.destroy)
 
 routes.get('/fills/:id', FillController.show)
 routes.get('/fills/export/:id', FillController.export)
+routes.get('/fillsperday', FillController.fillsPerDay)
 
 routes.get('/values/:formId', ValueController.show)
 
