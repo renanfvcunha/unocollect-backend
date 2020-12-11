@@ -2,6 +2,7 @@ import { Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
 import { getRepository } from 'typeorm'
+
 import { User } from '../models/User'
 import authConfig from '../../config/auth'
 

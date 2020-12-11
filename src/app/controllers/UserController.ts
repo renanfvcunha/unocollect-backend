@@ -1,8 +1,10 @@
 import { Request, Response } from 'express'
+import jwt from 'jsonwebtoken'
 import { getRepository } from 'typeorm'
 import bcrypt from 'bcryptjs'
 
 import { User } from '../models/User'
+import authConfig from '../../config/auth'
 
 interface IUser {
   id?: number
@@ -122,6 +124,47 @@ class UserController {
       await getRepository(User).save(user)
 
       return res.json({ msg: 'Usuário Cadastrado Com Sucesso!' })
+    } catch (err) {
+      console.log(err)
+      return res.status(500).json({
+        msg: 'Erro interno do servidor. Tente novamente ou contate o suporte.'
+      })
+    }
+  }
+
+  public async storeFirstUser (req: Request, res: Response): Promise<Response> {
+    const { name, username, password }: IUser = req.body
+
+    try {
+      // Verificando se não há usuários cadastrados
+      const hasUser = await getRepository(User).findOne()
+
+      if (hasUser) {
+        return res
+          .status(403)
+          .json({ msg: 'Já há usuários cadastrados no sistema.' })
+      }
+
+      // Criptografando senha do usuario
+      const passwordHash = await bcrypt.hash(password, 8)
+
+      // Adicionando usuário
+      const user = new User()
+      user.name = name
+      user.username = username
+      user.admin = true
+      user.password = passwordHash
+
+      const newUser = await getRepository(User).save(user)
+
+      const { id, admin } = newUser
+
+      return res.json({
+        user: { id, name, admin },
+        token: jwt.sign({ id }, authConfig.secret, {
+          expiresIn: authConfig.expiresIn
+        })
+      })
     } catch (err) {
       console.log(err)
       return res.status(500).json({

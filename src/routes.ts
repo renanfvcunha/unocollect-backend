@@ -16,11 +16,14 @@ import ImageController from './app/controllers/ImageController'
 import GroupController from './app/controllers/GroupController'
 
 import checkToken from './app/utils/checkToken'
+import checkHasUser from './app/utils/checkHasUser'
 
 const routes = Router()
 
 routes.get('/checktoken', checkToken)
 routes.post('/session', SessionController.store)
+routes.get('/checkhasuser', checkHasUser)
+routes.post('/firstuser', UserValidator.store, UserController.storeFirstUser)
 
 // Middleware de autenticação. Todas as rotas abaixo irão exigir autenticação do usuário
 routes.use(authMiddleware)
