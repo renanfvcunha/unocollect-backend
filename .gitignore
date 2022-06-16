@@ -8,3 +8,5 @@ temp/
 package-lock.json
 yarn.lock
 src/uploads
+
+db-data

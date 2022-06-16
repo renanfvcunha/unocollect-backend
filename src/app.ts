@@ -3,7 +3,9 @@ import express from 'express'
 import path from 'path'
 import { createConnection } from 'typeorm'
 import cors from 'cors'
+
 import routes from './routes'
+import dbConfig from './database/config'
 
 class App {
   public express = express.application
@@ -29,7 +31,7 @@ class App {
   }
 
   private async database (): Promise<void> {
-    await createConnection().then(() => console.log('DB Connected!'))
+    await createConnection(dbConfig).then(() => console.log('DB Connected!'))
   }
 }
 
