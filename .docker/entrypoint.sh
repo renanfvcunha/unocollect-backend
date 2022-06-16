@@ -1,9 +1,9 @@
 #!/bin/sh
 
-npm i
-
-npm run typeorm:migrate
+npm ci
 
 npm run build
+
+npm run typeorm:migrate
 
 npm run start:prod

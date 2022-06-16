@@ -6,22 +6,23 @@ networks:
 
 services:
   app:
-    image: node:16
+    build: .
+    image: uno-collect-image
+    container_name: uno-collect-production
     restart: unless-stopped
-    user: node
-    working_dir: /home/node/app
     volumes:
       - .:/home/node/app
     ports:
       - ${APP_PORT}:${APP_PORT}
+    entrypoint: ./.docker/entrypoint.sh
     depends_on:
       - db
-    entrypoint: ./.docker/entrypoint.sh
     networks:
       - app
 
   db:
     image: mysql:5.7
+    container_name: uno-collect-db
     restart: unless-stopped
     volumes:
       - ./.docker/db-data:/var/lib/mysql
