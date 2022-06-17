@@ -1,9 +1,11 @@
 FROM node:16-alpine
 
-WORKDIR /home/node/app
-
-RUN chown -Rh node:node /home/node
-
 USER node
+
+WORKDIR /home/node
+
+COPY package*.json ./
+
+RUN npm ci
 
 COPY . ./

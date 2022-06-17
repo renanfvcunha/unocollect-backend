@@ -11,7 +11,7 @@ services:
     container_name: uno-collect-production
     restart: unless-stopped
     volumes:
-      - .:/home/node/app
+      - .:/home/node
     ports:
       - ${APP_PORT}:${APP_PORT}
     entrypoint: ./.docker/entrypoint.sh
