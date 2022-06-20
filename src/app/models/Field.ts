@@ -50,8 +50,7 @@ export class Field {
   })
   type?: string
 
-  @Column({
-    length: 200,
+  @Column('text', {
     nullable: true
   })
   options?: string
